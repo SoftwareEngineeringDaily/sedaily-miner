@@ -14,7 +14,7 @@
     "dotenv": "^4.0.0",
     "get-urls": "^7.0.0",
     "moment": "^2.18.1",
-    "monk": "^4.0.0",
+    "monk": "^6.0.5",
     "request": "^2.81.0",
     "request-promise": "^4.2.0",
     "wpapi": "^1.0.3"
