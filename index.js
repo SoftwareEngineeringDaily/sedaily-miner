@@ -35,6 +35,8 @@ function findAdd(post) {
       if (!postFound) {
         console.log("here")
         return posts.insert(post);
+      } else {
+        // console.log('post exists already', post);
       }
 
       return;
