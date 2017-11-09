@@ -67,7 +67,7 @@ function getPosts(page) {
     })
     .then((result) => {
       if (!result) {
-        console.log('Done and closing db connectoin!');
+        console.log('Done and closing db connection!');
         db.close();
         process.exit();
 	      return;
@@ -77,8 +77,7 @@ function getPosts(page) {
       getPosts(page)
     })
     .catch(function (err) {
-      console.log('ERROR');
-      // console.log('ERROR', err);
+      console.log('ERROR', err);
       process.exit();
     });
 }
