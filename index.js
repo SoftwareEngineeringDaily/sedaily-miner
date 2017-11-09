@@ -27,14 +27,18 @@ let wpQueryString = querystring.stringify(query);
 
 const WPAPI = require( 'wpapi' );
 const wp = new WPAPI({ endpoint: 'http://softwareengineeringdaily.com/wp-json/wp/v2/posts' });
+
+// NOTE: page 1 is the latest podcasts:
 let page = 1;
 
 function findAdd(post) {
   return posts.findOne({id: post.id})
     .then((postFound) => {
       if (!postFound) {
-        console.log("here")
+        console.log("new post!")
         return posts.insert(post);
+      } else {
+         console.log('post exists already', post.id);
       }
 
       return;
@@ -63,16 +67,17 @@ function getPosts(page) {
     })
     .then((result) => {
       if (!result) {
+        console.log('Done and closing db connection!');
         db.close();
         process.exit();
 	      return;
       };
 
-      page += 1;console.log(page)
+      page += 1;console.log('page', page)
       getPosts(page)
     })
     .catch(function (err) {
-      console.log(err)
+      console.log('ERROR', err);
       process.exit();
     });
 }
