@@ -2,7 +2,11 @@
 
 A simple script to download posts from software engineering daily via the Wordpres api: https://softwareengineeringdaily.com/wp-json/wp/v2/posts
 
+# Note node version
+Works fine on version 7.10.1
 # Set up
+
+
  - npm install
  - cp .env.example .env
 
