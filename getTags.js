@@ -25,8 +25,6 @@ let query = {
 };
 let wpQueryString = querystring.stringify(query);
 
-const WPAPI = require( 'wpapi' );
-const wp = new WPAPI({ endpoint: 'http://softwareengineeringdaily.com/wp-json/wp/v2/posts' });
 let page = 1;
 
 function getTags(page) {
