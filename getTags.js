@@ -25,8 +25,6 @@ let query = {
 };
 let wpQueryString = querystring.stringify(query);
 
-const WPAPI = require( 'wpapi' );
-const wp = new WPAPI({ endpoint: 'http://softwareengineeringdaily.com/wp-json/wp/v2/posts' });
 let page = 1;
 
 function getTags(page) {
@@ -38,11 +36,11 @@ function getTags(page) {
     .then(function (response) {
       let promises = [];
 
-      let postsResponse = JSON.parse(response);
-      console.log(postsResponse.length)
-      if (postsResponse.length === 0) return false;
-      for (let post of postsResponse) {
-        let updatePromise = tags.update({id: post.id}, post, {upsert: true});
+      let tagsResponse = JSON.parse(response);
+      console.log(tagsResponse.length)
+      if (tagsResponse.length === 0) return false;
+      for (let tag of tagsResponse) {
+        let updatePromise = tags.update({id: tag.id}, tag, {upsert: true});
         promises.push(updatePromise);
       }
 
