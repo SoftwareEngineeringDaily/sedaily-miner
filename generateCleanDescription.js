@@ -25,8 +25,8 @@ posts.find( {cleanedContent: {$exists: false}})
             cleanedContent
           }
         });
-        promises.push(promise); // TODO: DRY RUN
-        console.log(post._id);
+        promises.push(promise); 
+        console.log('success', post._id);
       } else {
          console.log(post._id);
          console.log('-----error splitting document---------', splitContent);
