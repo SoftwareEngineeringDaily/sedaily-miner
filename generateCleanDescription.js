@@ -28,34 +28,13 @@ posts.find( {cleanedContent: {$exists: false}})
         promises.push(promise); // TODO: DRY RUN
         console.log(post._id);
       } else {
-        // console.log(post._id);
-        // console.log('-----error splitting document---------', splitContent);
+         console.log(post._id);
+         console.log('-----error splitting document---------', splitContent);
       }
     } else {
-      // console.log(post._id);
-      // console.log('-----error oldContent missing ---------');
+       console.log(post._id);
+       console.log('-----error oldContent missing ---------');
     }
-
-    /*
-    for (let url of values) {
-      let extension = url.substr(url.length - 4);
-
-      if (extension === '.mp3') {
-        mp3 = url;
-        break;
-      }
-    }*/
-
-    /*
-    if (mp3) {
-      let promise = posts.update({id: post.id}, {
-        $set: {
-          mp3,
-        },
-      });
-      promises.push(promise);
-    }
-    */
   })
   .then(() => {
     return Bluebird.all(promises);
