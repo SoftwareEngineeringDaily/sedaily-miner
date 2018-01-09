@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.179.0",
     "bluebird": "^3.5.0",
     "dotenv": "^4.0.0",
     "get-urls": "^7.0.0",
