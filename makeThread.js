@@ -34,6 +34,7 @@ function createThreadForPodcastEpisode(post, successCallback) {
       })
     } else {
       console.log('!!!!!! Thread for post exists already:', thread);
+      // TODO: associate forum thread to post:
     }
   }).catch((e) => {
     console.log('error', e);
@@ -42,6 +43,18 @@ function createThreadForPodcastEpisode(post, successCallback) {
 
 }
 
+// XXX: This removes forum from episode model:
+posts.find( {thread: {$exists: true}})
+.each ((post) => {
+  posts.update({_id: post._id}, {$unset: {
+    thread: 1
+  }}).then((result) => {
+    console.log('removed')
+  }).catch((e) => { console.log('error restting thread', e)})
+});
+
+
+/*
 posts.find( {thread: {$exists: false}})
   .each ((_post) => {
     (function(post){
@@ -57,3 +70,4 @@ posts.find( {thread: {$exists: false}})
     })(_post)
 
   });
+  */
