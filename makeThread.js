@@ -8,7 +8,7 @@ const Bluebird = require('bluebird');
 const moment = require('moment');
 
 
-threads.findOne({name: 'foo'}).then((thread) => {
+threads.findOne({_id: '5ad92f4695e42157ca2d11ef'}).then((thread) => {
   if (!thread) {
     console.log('Thread does not exist.');
   } else {
