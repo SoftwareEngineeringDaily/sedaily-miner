@@ -8,47 +8,52 @@ const Bluebird = require('bluebird');
 const moment = require('moment');
 
 
-threads.findOne({_id: '5ad92f4695e42157ca2d11ef'}).then((thread) => {
-  if (!thread) {
-    console.log('Thread does not exist.');
-  } else {
-    console.log('Thread:', thread);
-  }
-}).catch((e) => {
-  console.log('error', e);
-})
 
-/*
-function createThreadForPodcastEpisode(title, content, post, successCallback) {
+function createThreadForPodcastEpisode(post, successCallback) {
+  // Make sure thread doesn't exist already:
+  threads.findOne({podcastEpisode: post._id}).then((thread) => {
+    if (!thread) {
+      console.log('No forum thread for this podcast exists. Good to continue.');
 
-  // TODO: make sure it doesn't exist yet:
-
-  threads.insert({
-    title: 'Bot: Testing!',
-    content: 'Some post ',
-    author: monk.id('5ad6865b51d34d1c5f049bd5'),
-    podcastEpisode: monk.id(post._id),
-    score: 0 ,
-    // __v: 0,
-    deleted: false,
-    commentsCount: 0,
-    dateCreated: moment(Date.now()).toDate() ,
-    dateLastAcitiy:   moment(Date.now()).toDate() ,
-  }).then( (thread) => {
-    console.log('Thread created---');
-    console.log(thread);
-    process.exit();
+      const date = moment(post.date).toDate()
+      threads.insert({
+        title: 'Discuss: ' + post.title.rendered,
+        content: ' ',
+        author: monk.id(process.env.THREAD_AUTHOR_ID),
+        podcastEpisode: monk.id(post._id),
+        score: 0 ,
+        // __v: 0,
+        deleted: false,
+        commentsCount: 0,
+        dateCreated: date,
+        dateLastAcitiy: date,
+      }).then( (thread) => {
+        successCallback(thread);
+      }).catch((e) => {
+        console.log('error', e);
+      })
+    } else {
+      console.log('!!!!!! Thread for post exists already:', thread);
+    }
   }).catch((e) => {
     console.log('error', e);
-    process.exit();
   })
 
 
 }
 
-let promises = [];
 posts.find( {thread: {$exists: false}})
-  .each ((post) => {
+  .each ((_post) => {
+    (function(post){
+      createThreadForPodcastEpisode(post, (thread) => {
+        posts.update({_id: post._id}, {$set: {
+          thread: monk.id(thread._id),
+        }}).then((updatedPost) => {
 
-  })
-  */
+        }).catch((e) => {
+          console.log('error setting thread', post, thread);
+        })
+      });
+    })(_post)
+
+  });
