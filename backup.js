@@ -3,7 +3,7 @@ const backup = require('mongodb-backup');
 const AWS = require('aws-sdk'); 
 const fs =  require('fs');
 const archiver = require('archiver');
-
+const AWS_BUCKET = process.env.AWS_BUCKET;
 
 AWS.config = new AWS.Config();
 AWS.config.update({ accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY });
@@ -67,24 +67,24 @@ function readFile(filename) {
 			if (err) {
 				reject(err);
 			} else {
-				resolve(data);
+				resolve({data, filename});
 			}
 		})	
 	})
 }
 
-function uploadBackup(fileBuffer) {
+function uploadBackup(key, fileBuffer) {
 	return new Promise((resolve, reject) => {
 		const params = {
-        Bucket: 'sedaily-mongo-backup',
-        Key: 'backup-file-test.zip',
+        Bucket: AWS_BUCKET,
+        Key: key,
         Body: fileBuffer
     }
     s3.putObject(params, function(err, data) {
      if (err) {
      	reject(err)
      } else {
-     	resolve(data.ETag);
+     	resolve({ETag: data.ETag, key});
      }
    });
 	})
@@ -99,9 +99,9 @@ function backupAndUpload() {
 		return readFile(`${data.directoryPath}.zip`);
 	}).then(data => {
 		console.log('Uploading zipped up directory to S3...')
-		return uploadBackup(data);
-	}).then(ETag => {
-		console.log('Finished uploading backup to S3. ETag:', ETag)
+		return uploadBackup(data.filename, data.data);
+	}).then(data => {
+		console.log(`Finished uploading backup (${data.key}) to S3. ETag: ${data.ETag}`)
 	})
 	.catch(err => {
 		console.log(err)
