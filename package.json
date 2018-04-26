@@ -10,13 +10,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "archiver": "^2.1.1",
+    "aws-sdk": "^2.229.1",
     "bluebird": "^3.5.0",
     "dotenv": "^4.0.0",
     "get-urls": "^7.0.0",
     "moment": "^2.18.1",
+    "mongodb-backup": "^1.6.9",
     "monk": "^4.0.0",
     "request": "^2.81.0",
     "request-promise": "^4.2.0",
+    "rimraf": "^2.6.2",
     "wpapi": "^1.0.3"
   }
 }
