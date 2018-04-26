@@ -3,6 +3,7 @@ const backup = require('mongodb-backup');
 const AWS = require('aws-sdk'); 
 const fs =  require('fs');
 const archiver = require('archiver');
+const rimraf = require('rimraf');
 const AWS_BUCKET = process.env.AWS_BUCKET;
 
 AWS.config = new AWS.Config();
@@ -22,6 +23,22 @@ function backupMongo() {
 		  	}
 		  }
 		});
+	})
+}
+
+function removeDirectory(directory) {
+	return new Promise((resolve, reject) => {
+		if (directory[0] == '/') {
+			reject('No top level directories can be removed!');
+		} else {
+			rimraf(directory, function (err) {
+				if (err) {
+					reject(err);
+				} else {
+					resolve({directory});
+				}
+			})
+		}
 	})
 }
 
@@ -92,21 +109,33 @@ function uploadBackup(key, fileBuffer) {
 }
 
 function backupAndUpload() {
-	console.log('Backing up database to local directory...')
+	var databaseName;
+	console.log('Backing up database to local directory...');
 	backupMongo().then(data => {
-		console.log('Database backed up locally, zipping up directory...')
-		return zipDirectory(data.directoryPath);
+		databaseName = data.directoryPath;
+		console.log('Removing users directory...');
+		return removeDirectory(`${databaseName}/users`);
 	}).then(data => {
-		console.log('Reading zipped up directory...')
-		return readFile(`${data.directoryPath}.zip`);
+		console.log('Database backed up locally, zipping up directory...');
+		return zipDirectory(databaseName);
 	}).then(data => {
-		console.log('Uploading zipped up directory to S3...')
+		console.log('Reading zipped directory...');
+		return readFile(`${databaseName}.zip`);
+	}).then(data => {
+		console.log('Uploading zipped directory to S3...')
 		return uploadBackup(data.filename, data.data);
 	}).then(data => {
-		console.log(`Finished uploading backup (${data.key}) to S3. ETag: ${data.ETag}`)
+		console.log(`Finished uploading (${data.key}) to S3. ETag: ${data.ETag}`);
+		console.log(`Removing backup directory...`);
+		return removeDirectory(databaseName);
+	}).then(data => {
+		console.log('Removing zipped directory...')
+		return removeDirectory(`${databaseName}.zip`);
+	}).then(data => {
+		console.log('Finished!');
 	})
 	.catch(err => {
-		console.log(err)
+		console.log(err);
 	})
 }
 
