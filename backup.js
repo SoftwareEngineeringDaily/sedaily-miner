@@ -78,7 +78,8 @@ function uploadBackup(key, fileBuffer) {
 		const params = {
         Bucket: AWS_BUCKET,
         Key: key,
-        Body: fileBuffer
+        Body: fileBuffer,
+        ACL: 'public-read'
     }
     s3.putObject(params, function(err, data) {
      if (err) {
