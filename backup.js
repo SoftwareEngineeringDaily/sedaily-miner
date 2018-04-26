@@ -91,6 +91,7 @@ function uploadBackup(key, fileBuffer) {
 }
 
 function backupAndUpload() {
+	console.log('Backing up database to local directory...')
 	backupMongo().then(data => {
 		console.log('Database backed up locally, zipping up directory...')
 		return zipDirectory(data.directoryPath);
