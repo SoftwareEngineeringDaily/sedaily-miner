@@ -10,16 +10,16 @@ AWS.config = new AWS.Config();
 AWS.config.update({ accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY });
 const s3 = new AWS.S3();
 
-function backupMongo() {
+function backupMongo(mongoUri) {
 	return new Promise((resolve, reject) => {
 		backup({
-		  uri: `mongodb://${process.env.MONGO_DB}`,
+		  uri: mongoUri,
 		  root: __dirname,
 		  callback: function(err) {
 		  	if (err) {
 		  		reject(err)
 		  	} else {
-		  		resolve({directoryPath: process.env.MONGO_DB.split('/')[1]})
+		  		resolve();
 		  	}
 		  }
 		});
@@ -50,7 +50,6 @@ function zipDirectory(directory) {
 		});
 
 		output.on('close', function() {
-		  console.log('archiver has been finalized and the output file descriptor has closed.');
 		  resolve({directoryPath: directory});
 		});
 
@@ -109,10 +108,10 @@ function uploadBackup(key, fileBuffer) {
 }
 
 function backupAndUpload() {
-	var databaseName;
 	console.log('Backing up database to local directory...');
-	backupMongo().then(data => {
-		databaseName = data.directoryPath;
+	const mongoUri = `mongodb://${process.env.MONGO_DB}`;
+	const databaseName = process.env.MONGO_DB.split('/')[1];
+	backupMongo(mongoUri).then(() => {
 		console.log('Removing users directory...');
 		return removeDirectory(`${databaseName}/users`);
 	}).then(data => {
@@ -125,7 +124,7 @@ function backupAndUpload() {
 		console.log('Uploading zipped directory to S3...')
 		return uploadBackup(data.filename, data.data);
 	}).then(data => {
-		console.log(`Finished uploading (${data.key}) to S3. ETag: ${data.ETag}`);
+		console.log(`Finished uploading ${data.key} to S3. ETag: ${data.ETag}`);
 		console.log(`Removing backup directory...`);
 		return removeDirectory(databaseName);
 	}).then(data => {
@@ -136,6 +135,8 @@ function backupAndUpload() {
 	})
 	.catch(err => {
 		console.log(err);
+		removeDirectory(`${databaseName}.zip`);
+		removeDirectory(databaseName);
 	})
 }
 
