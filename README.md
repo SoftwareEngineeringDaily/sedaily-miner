@@ -23,6 +23,8 @@ A script to download posts and auxilliary post details from software engineering
  #### - Adding Tags to all the Posts:
  - `node addTags .js`
 
+ #### - Making Forum Threads for Post Episodes:
+ - `node makeThreadForEpisodes .js`
 
 
  Also make sure to run these to populate missing fields like featuredImage, etc.
