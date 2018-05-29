@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "git push heroku master:master"
   },
   "keywords": [],
   "author": "",
@@ -15,7 +16,7 @@
     "get-urls": "^7.0.0",
     "moment": "^2.18.1",
     "monk": "^4.0.0",
-    "request": "^2.81.0",
+    "request": "^2.87.0",
     "request-promise": "^4.2.0",
     "wpapi": "^1.0.3"
   }
