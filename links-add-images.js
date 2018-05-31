@@ -19,8 +19,6 @@ db.then(() => {
 
 
 
-
-
 const getImageAsUrl = function(imageUrl, url) {
   if(url[url.length -1 ] === '/') {
     return url.substr(0, url.length-1) + imageUrl;
@@ -105,14 +103,12 @@ const getImage = function(link) {
 
 
 const relatedLinks = db.get('relatedlinks');
-const unrelatedLinks = db.get('unrelatedlinks');
 
 
 // This will get us a link array for each:
 
 const getRelatedLinkPromise = relatedLinks.find({image: null});
-const getUnrelatedLinksPromise = unrelatedLinks.find({image: null});
-const dbTables = [relatedLinks, unrelatedLinks];
+const dbTables = [relatedLinks];
 
 // TODO: refactor this:
 
@@ -145,44 +141,6 @@ getRelatedLinkPromise.each((link) => {
 })
 .catch((error) => { console.log(error); })
               
-
-
-let unrealtedLinkPromises  = [];
-getUnrelatedLinksPromise.each((link) => {
-    const p = getImage(link)
-    .then(function({image, link})  {
-      console.log('Found an image:**********', image, 'link: ', link.url, link._id);
-
-      return unrelatedLinks.update({_id: link._id}, {$set: {image}})
-      .then((result) => {
-        console.log('success inserting into db')
-      })
-      .catch((error) => {
-        console.log('error updating link', error)
-      })
-    })
-    .catch(function(error){
-      console.log('::::::::::::err', error);
-      // getImage2(link);
-    });
-    unrealtedLinkPromises.push(p);
-})
-.then(() => {
-  return Bluebird.all(unrealtedLinkPromises);
-})
-.then(() => {
-  console.log("done with UNrelated links");
-})
-.catch((error) => { console.log(error); })
-
-
-
-
-
-
-
-
-
 
 // Refactor this code
 // Ideas --> get another image scraping library
