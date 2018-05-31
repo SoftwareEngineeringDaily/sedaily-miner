@@ -14,10 +14,13 @@
     "bluebird": "^3.5.0",
     "dotenv": "^4.0.0",
     "get-urls": "^7.0.0",
+    "html-to-json": "^0.6.0",
+    "lodash": "^4.17.10",
     "moment": "^2.18.1",
     "monk": "^4.0.0",
     "request": "^2.87.0",
     "request-promise": "^4.2.0",
+    "valid-url": "^1.0.9",
     "wpapi": "^1.0.3"
   }
 }
