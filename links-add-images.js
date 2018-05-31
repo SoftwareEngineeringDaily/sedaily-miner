@@ -6,7 +6,6 @@ const validUrl = require('valid-url');
 
 const axios = require('axios');
 require('dotenv').config();
-var diffbotToken =   process.env.DIFFBOT_TOKEN;
 
 
 let Bluebird = require('bluebird');
