@@ -29,9 +29,11 @@ const getImageAsUrl = function(imageUrl, url) {
 
 const getBestImage = function(images, url) {
   if(images == null || images.legnth == 0 ) return null;
-  let  bestImage = images[0];
-  console.log('best image', bestImage);
-  if (bestImage == null) return null;
+  let  firstImage  = images[0];
+  if (firstImage  == null) return null;
+
+  let bestImage = null;
+
   _.each(images, function(image) {
     if(image.indexOf('.png') > 0 || 
        image.indexOf('.jpeg') > 0 || 
@@ -43,6 +45,8 @@ const getBestImage = function(images, url) {
       }
   });
 
+  if(bestImage == null) return null;
+
   // If not a URI:
   if(bestImage.indexOf('/') === 0 ) {
     bestImage = getImageAsUrl(bestImage, url);
@@ -52,6 +56,7 @@ const getBestImage = function(images, url) {
     cosole.log('Invalid image url---------------------', bestImage, ' --url: ', url);
     return null;
   }
+
   
   return bestImage;
 }
