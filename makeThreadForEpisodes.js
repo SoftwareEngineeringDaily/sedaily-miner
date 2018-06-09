@@ -6,11 +6,12 @@ const threads = db.get('forumthreads')
 const posts = db.get('posts')
 const Bluebird = require('bluebird');
 const moment = require('moment');
+var colors = require('colors/safe');
+const users = db.get('users')
 
-
-
-function createThreadForPodcastEpisode(post, successCallback) {
+function createThreadForPodcastEpisode(user, post, successCallback) {
   // Make sure thread doesn't exist already:
+  console.log('creating thread for podcast episode')
   threads.findOne({podcastEpisode: post._id}).then((thread) => {
     if (!thread) {
       console.log('No forum thread for this podcast exists. Good to continue.');
@@ -19,7 +20,7 @@ function createThreadForPodcastEpisode(post, successCallback) {
       threads.insert({
         title: 'Discuss: ' + post.title.rendered,
         content: ' ',
-        author: monk.id(process.env.THREAD_AUTHOR_ID),
+        author: monk.id(user._id),
         podcastEpisode: monk.id(post._id),
         score: 0 ,
         // __v: 0,
@@ -39,8 +40,6 @@ function createThreadForPodcastEpisode(post, successCallback) {
   }).catch((e) => {
     console.log('error', e);
   })
-
-
 }
 
 /*
@@ -55,18 +54,27 @@ posts.find( {thread: {$exists: true}})
 });
 */
 
-posts.find( {thread: {$exists: false}})
-  .each ((_post) => {
-    (function(post){
-      createThreadForPodcastEpisode(post, (thread) => {
-        posts.update({_id: post._id}, {$set: {
-          thread: monk.id(thread._id),
-        }}).then((updatedPost) => {
+// TODO: first find forumAdmin:
 
-        }).catch((e) => {
-          console.log('error setting thread', post, thread);
-        })
-      });
-    })(_post)
+const forumAdminEmail  = process.env.FORUM_ADMIN_EMAIL ? process.env.FORUM_ADMIN_EMAIL : 'forum_admin@softwaredaily.com';
 
-  });
+users.findOne({email: forumAdminEmail}).then((user) => {
+  if(!user) {
+      console.log(colors.red('Forum user not created yet.'));
+  } else {
+    posts.find( {thread: {$exists: false}})
+    .each ((_post) => {
+      (function(post){
+        createThreadForPodcastEpisode(user, post, (thread) => {
+          posts.update({_id: post._id}, {$set: {
+            thread: monk.id(thread._id),
+          }}).then((updatedPost) => {
+            console.log(updatedPost)
+          }).catch((e) => {
+            console.log('error setting thread', post, thread);
+          })
+        });
+      })(_post)
+    });
+  }
+});
