@@ -66,7 +66,7 @@ function getAllTranscriptUrls(posts, index, callback) {
 
 const POST_LIMIT = 0;
 
-posts.find({transcriptUrl: { $exists: true }}, { limit: POST_LIMIT })
+posts.find({transcriptUrl: { $exists: false }}, { limit: POST_LIMIT })
   .then((posts) => {
     console.log(posts.length)
     getAllTranscriptUrls(posts, 0, (err) => {
