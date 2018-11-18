@@ -51,8 +51,7 @@ function getAllTranscriptUrls(posts, index, callback) {
   })
 }
 
-// posts.find({transcript_url: { $exists: false }}, { limit: 50 })
-posts.find({})
+posts.find({}, { limit: Number.parseInt(process.env.POST_LIMIT) })
   .then((posts) => {
     getAllTranscriptUrls(posts, 0, (err) => {
       if (err) {
