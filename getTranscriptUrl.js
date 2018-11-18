@@ -8,36 +8,49 @@ const { JSDOM } = jsdom;
 
 
 function getTranscriptUrl(post) {
-  console.log(post.link)
   let options = {
     method: "GET",
     uri: post.link
   }
-
+  var info = {
+    _id: post._id
+  };
   return rp(options).then(response => {
     const dom = new JSDOM(response);
-    let list = dom.window.document.getElementsByClassName("post__content")[0].getElementsByTagName("p")
-    var info = {
-      _id: post._id
-    };
+    var list = dom.window.document.getElementsByClassName("post__content")[0].getElementsByTagName("p")
     
     for (var i = 0; i < list.length; i++) {
       if (list[i].innerHTML.indexOf("Transcript provided by We Edit Podcasts") > -1) {
         info.transcriptUrl = list[i].getElementsByTagName("a")[1].href;
       }
     }
+    if (!info.transcriptUrl) {
+    	list = dom.window.document.getElementsByClassName("post__content")[0].getElementsByTagName("div")
+    	for (var i = 0; i < list.length; i++) {
+	      if (list[i].innerHTML.indexOf("Transcript provided by We Edit Podcasts") > -1) {
+	        info.transcriptUrl = list[i].getElementsByTagName("a")[1].href;
+	      }
+	    }
+    }
+
     return info;
+  })
+  .catch(err => {
+  	console.log(err)
+  	return info;
   })
 }
 
 function updateTranscriptUrl(_id, url) {
-  console.log(_id, url)
-  posts.update({_id: _id}, { $set: { transcript_url: url }}).then(function (result) {
-    // console.log(result)
-  })
+	console.log(url)
+  if (url) {
+    posts.update({_id: _id}, { $set: { transcriptUrl: url }}).then(function (result) {
+    })
+  }
 }
 
 function getAllTranscriptUrls(posts, index, callback) {
+	console.log(posts[index].link)
   getTranscriptUrl(posts[index]).then(result => {
     updateTranscriptUrl(result._id, result.transcriptUrl)
     if (index < posts.length - 1) {
@@ -51,8 +64,11 @@ function getAllTranscriptUrls(posts, index, callback) {
   })
 }
 
-posts.find({}, { limit: Number.parseInt(process.env.POST_LIMIT) })
+const POST_LIMIT = 0;
+
+posts.find({transcriptUrl: { $exists: false }}, { limit: POST_LIMIT })
   .then((posts) => {
+    console.log(posts.length)
     getAllTranscriptUrls(posts, 0, (err) => {
       if (err) {
         console.log(err)
