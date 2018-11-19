@@ -42,7 +42,7 @@ function getTranscriptUrl(post) {
 }
 
 function updateTranscriptUrl(_id, url) {
-	console.log(url)
+	console.log(_id, url)
   if (url) {
     posts.update({_id: _id}, { $set: { transcriptUrl: url }}).then(function (result) {
     })
