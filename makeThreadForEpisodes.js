@@ -56,7 +56,7 @@ posts.find( {thread: {$exists: true}})
 
 // TODO: first find forumAdmin:
 
-const forumAdminEmail  = process.env.FORUM_ADMIN_EMAIL ? process.env.FORUM_ADMIN_EMAIL : 'forum_admin@softwaredaily.com';
+const forumAdminEmail  = process.env.FORUM_ADMIN_EMAIL ? process.env.FORUM_ADMIN_EMAIL : 'contact@softwaredaily.com';
 
 users.findOne({email: forumAdminEmail}).then((user) => {
   if(!user) {
