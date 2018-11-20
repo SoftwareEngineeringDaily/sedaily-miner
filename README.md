@@ -17,17 +17,17 @@ A script to download posts and auxilliary post details from software engineering
  #### - Getting Mp3 file links for Posts:
  - `node getMp3.js`
 
- #### - Fetching list of all tags:
- - `node getTags.js`
+ #### - Generate clean description for Posts:
+ - `node generateCleanDescription.js`
 
- #### - Adding Tags to all the Posts:
- - `node addTags .js`
+ #### - Create a discussion thread for each episode:
+ - `node makeThreadForEpisodes.js`
+ 
+ #### - Generate a feed for each user based on related links of listened episodes:
+ - `feed-item-collector.js`
 
+ #### - Generate a feed for anonymous users:
+ - `feed-item-general-collector.js`
 
-
- Also make sure to run these to populate missing fields like featuredImage, etc.
-
-
-
-
-
+ #### - Add images to links that do not have one
+ - `links-add-images.js`
