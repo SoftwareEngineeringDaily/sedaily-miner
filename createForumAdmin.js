@@ -12,7 +12,7 @@ var passwordGenerator = require('generate-password');
 
 
 // THIS IS what we go by when finding a user:
-const forumAdminEmail  = process.env.FORUM_ADMIN_EMAIL ? process.env.FORUM_ADMIN_EMAIL : 'forum_admin@softwaredaily.com';
+const forumAdminEmail  = process.env.FORUM_ADMIN_EMAIL ? process.env.FORUM_ADMIN_EMAIL : 'contact@softwaredaily.com';
 
 
 const name  = process.env.FORUM_ADMIN_NAME ? process.env.FORUM_ADMIN_NAME : 'Forum';
