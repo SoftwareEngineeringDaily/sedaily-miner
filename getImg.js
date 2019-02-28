@@ -12,7 +12,8 @@ posts.find({featuredImage: {$exists: false}})
     let values = urls.values();
     let mp3 = '';
     let mainImage = '';
-
+    console.log("++++++++++++++++++++++++++++++++++++++++");
+    console.log(urls);
     if (!post._links['wp:featuredmedia']) return;
     let medieaPromise = rp(post._links['wp:featuredmedia'][0].href)
       .then((result) => {

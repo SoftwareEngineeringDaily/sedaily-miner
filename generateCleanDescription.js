@@ -16,7 +16,7 @@ posts.find( {cleanedContent: {$exists: false}})
     let mainImage = '';
 
     if (oldContent) {
-      const splitContent = oldContent.split('Download</a>')
+      const splitContent = oldContent.split('Download</a></p>')
       if (splitContent.length == 2) {
 
         const cleanedContent = splitContent[1];
@@ -25,7 +25,7 @@ posts.find( {cleanedContent: {$exists: false}})
             cleanedContent
           }
         });
-        promises.push(promise); 
+        promises.push(promise);
         console.log('success', post._id);
       } else {
          console.log(post._id);
