@@ -1,3 +1,8 @@
+/*
+  Script to find guest's image URL from cleanedContent for each post and
+  add this to the post in the database.
+*/
+
 require('dotenv').config()
 const HTML = require('html-parse-stringify');
 const _ =require('lodash');
@@ -17,6 +22,7 @@ posts.find({guestImage: {$exists: false}})
 
     let imageURL = getImage(splitedContent)
 
+    console.log("To id: " + post.id + "\nAdd: " + imageURL + "\n");
     return posts.update({id: post.id}, {
       $set: {
         "guestImage": imageURL
@@ -34,18 +40,22 @@ posts.find({guestImage: {$exists: false}})
   .catch((error) => { console.log(error); })
 
 function getImage(content) {
-  const parsedContent = HTML.parse(content);
-  paragraph = _.find(parsedContent, function(tag) {
-    return tag.name === 'p'
-  })
-  if (paragraph && paragraph.children) {
-    const img = _.find(paragraph.children, function(tag) {
-      return tag.name === 'img'
+  try {
+    const parsedContent = HTML.parse(content);
+    paragraph = _.find(parsedContent, function(tag) {
+      return tag.name === 'p'
     })
-    const imgURL = img.attrs.src
-    return imgURL
-  } else {
-    return
+    if (paragraph && paragraph.children) {
+      const img = _.find(paragraph.children, function(tag) {
+        return tag.name === 'img'
+      })
+      const imgURL = img.attrs.src
+      return imgURL
+    } else {
+      return
+    }
+  } catch (e) {
+    console.log(e);
   }
 }
 
