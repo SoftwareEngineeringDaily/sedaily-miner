@@ -9,7 +9,6 @@ let promises = [];
 
 posts.find({guestImage: {$exists: false}})
   .each((post) => {
-    console.log(post.id);
     if (!post["cleanedContent"]) return;
 
     let cleanedContent = post['cleanedContent']
@@ -29,7 +28,7 @@ posts.find({guestImage: {$exists: false}})
     return Bluebird.all(promises);
   })
   .then(() => {
-    console.log("done");
+    console.log("SUCCESS");
     process.exit();
   })
   .catch((error) => { console.log(error); })

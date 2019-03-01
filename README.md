@@ -22,7 +22,7 @@ A script to download posts and auxilliary post details from software engineering
 
  #### - Create a discussion thread for each episode:
  - `node makeThreadForEpisodes.js`
- 
+
  #### - Generate a feed for each user based on related links of listened episodes:
  - `feed-item-collector.js`
 
@@ -31,3 +31,6 @@ A script to download posts and auxilliary post details from software engineering
 
  #### - Add images to links that do not have one
  - `links-add-images.js`
+
+ #### - Add guests images to posts that do not have one
+ - `getGuestImage.js`
