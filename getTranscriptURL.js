@@ -1,3 +1,8 @@
+/*
+  Script to find translateURL from cleanedContent for each post and
+  add this to the post in the database. 
+*/
+
 require('dotenv').config()
 const HTML = require('html-parse-stringify');
 const _ =require('lodash');
