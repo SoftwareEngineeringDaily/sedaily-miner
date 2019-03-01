@@ -32,5 +32,9 @@ A script to download posts and auxilliary post details from software engineering
  #### - Add images to links that do not have one
  - `links-add-images.js`
 
+ #### - Add translate url to posts that do not have one
+ - `getTranscriptURL.js`
+
  #### - Add guests images to posts that do not have one
  - `getGuestImage.js`
+
