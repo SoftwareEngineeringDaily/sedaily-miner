@@ -12,14 +12,14 @@ posts.find({featuredImage: {$exists: false}})
     let values = urls.values();
     let mp3 = '';
     let mainImage = '';
-
     if (!post._links['wp:featuredmedia']) return;
     let medieaPromise = rp(post._links['wp:featuredmedia'][0].href)
       .then((result) => {
         let json = JSON.parse(result);
         if (!json.guid.rendered) return;
 
-        let featuredImage = json.guid.rendered;console.log(featuredImage)
+        let featuredImage = json.guid.rendered;
+        console.log(featuredImage)
         return posts.update({id: post.id}, {
           $set: {
             featuredImage,
