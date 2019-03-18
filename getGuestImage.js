@@ -5,7 +5,7 @@
 
 require('dotenv').config()
 const HTML = require('html-parse-stringify');
-const _ =require('lodash');
+const _ = require('lodash');
 const db = require('monk')(process.env.MONGO_DB)
 const posts = db.get('posts')
 const Bluebird = require('bluebird');
@@ -23,12 +23,12 @@ posts.find({guestImage: {$exists: false}})
     let imageURL = getImage(splitedContent)
 
     console.log("To id: " + post.id + "\nAdd: " + imageURL + "\n");
-    return posts.update({id: post.id}, {
+    let promise = posts.update({id: post.id}, {
       $set: {
         "guestImage": imageURL
       },
     });
-    promises.push(cleanedContent);
+    promises.push(promise);
   })
   .then(() => {
     return Bluebird.all(promises);
