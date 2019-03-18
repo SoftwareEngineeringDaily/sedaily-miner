@@ -38,3 +38,16 @@ A script to download posts and auxilliary post details from software engineering
  #### - Add guests images to posts that do not have one
  - `getGuestImage.js`
 
+ #### - Generate topics
+
+ Generates topics from Wordpress tags names. New topics adds to Topics table and increases topics counters.
+
+ - `generateTopics.js`
+
+# Additional scripts
+
+ #### - Clear topics
+
+ Removes all topics from database and the "topics" field from posts' documents (WARNING - this script removes all topics from database and all users' actions (adding and assigning) topics can be lost)
+
+ - `removeTopicsFromPosts.js`
