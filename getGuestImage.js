@@ -16,7 +16,7 @@ posts.find({guestImage: {$exists: false}})
   .each((post) => {
     let cleanedContent
     if (post["cleanedContent"]) {
-      cleanedContent = post["cleanedContent"])
+      cleanedContent = post["cleanedContent"]
     } else if (post.content.rendered) {
       cleanedContent = post.content.rendered
     } else {
