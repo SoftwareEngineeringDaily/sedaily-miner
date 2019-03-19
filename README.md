@@ -24,25 +24,26 @@ A script to download posts and auxilliary post details from software engineering
  - `node makeThreadForEpisodes.js`
 
  #### - Generate a feed for each user based on related links of listened episodes:
- - `feed-item-collector.js`
+ - `node feed-item-collector.js`
 
  #### - Generate a feed for anonymous users:
- - `feed-item-general-collector.js`
+ - `node feed-item-general-collector.js`
 
  #### - Add images to links that do not have one
- - `links-add-images.js`
+ - `node links-add-images.js`
 
  #### - Add translate url to posts that do not have one
- - `getTranscriptURL.js`
+ - `node getTranscriptURL.js`
 
  #### - Add guests images to posts that do not have one
- - `getGuestImage.js`
+ - `node getGuestImage.js`
 
  #### - Generate topics
 
  Generates topics from Wordpress tags names. New topics adds to Topics table and increases topics counters.
-
- - `generateTopics.js`
+ - `node getTags.js`
+ - `node addTags.js`
+ - `node generateTopics.js`
 
 # Additional scripts
 
@@ -50,4 +51,4 @@ A script to download posts and auxilliary post details from software engineering
 
  Removes all topics from database and the "topics" field from posts' documents (WARNING - this script removes all topics from database and all users' actions (adding and assigning) topics can be lost)
 
- - `removeTopicsFromPosts.js`
+ - `node removeTopicsFromPosts.js`

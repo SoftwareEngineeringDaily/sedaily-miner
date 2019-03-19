@@ -8,9 +8,11 @@ const _ = require('lodash');
 
 let newTopics = []
 let promises = []
-
+let i = 0
 function createTopics() {
   posts.find({ filterTags: { $exists: true }}).each(async post => {
+    i++
+    console.log(i);
     if (post.filterTags.length != 0) {
       let k = 0;
       for (k = 0; k<post.filterTags.length; k++) {
@@ -35,7 +37,7 @@ function createTopics() {
                 })
               }
             }
-            })
+          });
             promises.push(promise)
           } catch(e) {
              console.log('catch', e)
