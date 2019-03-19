@@ -1,6 +1,6 @@
 /*
   Script to find translateURL from cleanedContent for each post and
-  add this to the post in the database. 
+  add this to the post in the database.
 */
 
 require('dotenv').config()
@@ -9,58 +9,38 @@ const _ =require('lodash');
 const db = require('monk')(process.env.MONGO_DB)
 const posts = db.get('posts')
 const Bluebird = require('bluebird');
+const getUrls = require('get-urls');
+const request = require("request");
 
 let promises = [];
-
+let postsCount = 0
 posts.find({transcriptURL: {$exists: false}})
   .each((post) => {
-    if (!post["cleanedContent"]) return;
+    postsCount++
 
-    let cleanedContent = post['cleanedContent']
+    request({
+      uri: post.link,
+    }, function(error, response, body) {
+      const urls = getUrls(body);
+      let values = urls.values();
 
-    let splitedContent = splitContent(cleanedContent)
+      var transcriptURL = null;
+      for (let url of values) {
+        let extension = url.substr(url.length - 4);
 
-    let transcriptURL = getTranscript(splitedContent)
-    console.log("To id: " + post.id + "\nAdd: " + transcriptURL + "\n");
-    return posts.update({id: post.id}, {
-      $set: {
-        "transcriptURL": transcriptURL
-      },
+        if (extension === '.pdf') {
+          transcriptURL = url;
+          console.log(transcriptURL);
+
+          return posts.update({id: post.id}, {
+            $set: {
+              "transcriptURL": transcriptURL
+            },
+          });
+          break;
+        }
+      }
     });
-    promises.push(cleanedContent);
-  })
-  .then(() => {
-    return Bluebird.all(promises);
-  })
-  .then(() => {
-    console.log("SUCCESS");
-    process.exit();
+    console.log(postsCount);
   })
   .catch((error) => { console.log(error); })
-
-function getTranscript(content) {
-  try {
-    const parsedContent = HTML.parse(content);
-    paragraph = _.find(parsedContent, function(tag) {
-      return tag.name === 'p'
-    })
-    if (paragraph && paragraph.children) {
-      const transcript = _.findLast(paragraph.children, function(tag) {
-        return tag.name === 'a'
-      })
-      const transcriptURL = transcript.attrs.href
-      return transcriptURL
-    } else {
-      return
-    }
-  } catch (e) {
-    console.log(e);
-  }
-}
-
-function splitContent(content) {
-  const splitFrom = content.search("<h2>Transcript</h2>");
-  const splitTo = content.search("</a></p>");
-  var result = content.slice(splitFrom, splitTo);
-  return result
-}
