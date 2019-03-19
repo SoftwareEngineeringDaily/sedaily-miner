@@ -16,7 +16,7 @@ posts.find( {cleanedContent: {$exists: false}})
     let mainImage = '';
 
     if (oldContent) {
-      const splitContent = oldContent.split('Download</a></p>')
+      const splitContent = oldContent.split('Download</a>')
       if (splitContent.length == 2) {
 
         const cleanedContent = splitContent[1];

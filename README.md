@@ -33,16 +33,17 @@ A script to download posts and auxilliary post details from software engineering
  - `links-add-images.js`
 
  #### - Add translate url to posts that do not have one
- - `getTranscriptURL.js`
+ - `node getTranscriptURL.js`
 
  #### - Add guests images to posts that do not have one
- - `getGuestImage.js`
+ - `node getGuestImage.js`
 
  #### - Generate topics
 
  Generates topics from Wordpress tags names. New topics adds to Topics table and increases topics counters.
-
- - `generateTopics.js`
+ - `node getTags.js`
+ - `node addTags.js`
+ - `node generateTopics.js`
 
 # Additional scripts
 
@@ -50,4 +51,4 @@ A script to download posts and auxilliary post details from software engineering
 
  Removes all topics from database and the "topics" field from posts' documents (WARNING - this script removes all topics from database and all users' actions (adding and assigning) topics can be lost)
 
- - `removeTopicsFromPosts.js`
+ - `node removeTopicsFromPosts.js`

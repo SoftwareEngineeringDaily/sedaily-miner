@@ -14,9 +14,9 @@ let promises = [];
 
 posts.find({guestImage: {$exists: false}})
   .each((post) => {
-    if (!post["cleanedContent"]) return;
+    if (!post.content.rendered) return;
 
-    let cleanedContent = post['cleanedContent']
+    let cleanedContent = post.content.rendered
 
     let splitedContent = splitContent(cleanedContent)
 
