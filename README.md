@@ -24,13 +24,13 @@ A script to download posts and auxilliary post details from software engineering
  - `node makeThreadForEpisodes.js`
 
  #### - Generate a feed for each user based on related links of listened episodes:
- - `feed-item-collector.js`
+ - `node feed-item-collector.js`
 
  #### - Generate a feed for anonymous users:
- - `feed-item-general-collector.js`
+ - `node feed-item-general-collector.js`
 
  #### - Add images to links that do not have one
- - `links-add-images.js`
+ - `node links-add-images.js`
 
  #### - Add translate url to posts that do not have one
  - `node getTranscriptURL.js`
