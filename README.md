@@ -43,7 +43,7 @@ A script to download posts and auxilliary post details from software engineering
  Generates topics from Wordpress tags names. New topics adds to Topics table and increases topics counters.
  - `node getTags.js`
  - `node addTags.js`
- - `node generateTopics.js`
+ - `node generateTopics.js` (The process will end automatically)
 
 # Additional scripts
 
