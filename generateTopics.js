@@ -11,41 +11,47 @@ let promises = []
 let i = 0
 function createTopics() {
   posts.find({ filterTags: { $exists: true }}).each(async post => {
-    i++
-    console.log(i);
-    if (post.filterTags.length != 0) {
-      let k = 0;
-      for (k = 0; k<post.filterTags.length; k++) {
-        const tag = post.filterTags[k]
-        try {
-          const tagName = tag.name;
+    try {
+      i++
+      console.log(i);
+      if (post.filterTags.length != 0) {
+        let k = 0;
+        for (k = 0; k<post.filterTags.length; k++) {
+          const tag = post.filterTags[k]
+          try {
+            const tagName = tag.name;
 
-          let promise = topics.findOne({ name: tagName })
-          .then((existingTopic) => {
+            let promise = topics.findOne({ name: tagName })
+            .then((existingTopic) => {
 
-            if (!existingTopic) {
-              // create topic if is not contained in existingTopic:
-              const slug = generateSlug(tagName);
+              if (!existingTopic) {
+                // create topic if is not contained in existingTopic:
+                // const slug = generateSlug(tagName);
 
-              const t =_.find(newTopics, x => x.name === tagName)
-              if (!t) {
-                newTopics.push({
-                  name: tagName,
-                  slug: slug,
-                  postCount: 1,
-                  status: 'active'
-                })
+                const t =_.find(newTopics, x => x.name === tagName)
+                if (!t) {
+                  newTopics.push({
+                    name: tagName,
+                    slug: tag.slug,
+                    postCount: 1,
+                    status: 'active'
+                  })
+                }
               }
+            });
+              promises.push(promise)
+            } catch(e) {
+               console.log('catch', e)
             }
-          });
-            promises.push(promise)
-          } catch(e) {
-             console.log('catch', e)
           }
-        }
+      }
+    } catch(e) {
+      console.log('ERROR', e)
     }
   }).then(() => {
-    return Bluebird.all(promises);
+    try {
+      return Bluebird.all(promises);
+    } catch(e) { console.log(e)}
   }).then(async () => {
     await addTopicsToDB()
   })
