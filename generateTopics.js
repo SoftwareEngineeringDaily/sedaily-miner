@@ -9,11 +9,12 @@ const _ = require('lodash');
 let newTopics = []
 let promises = []
 let i = 0
+let i2 = 0
 function createTopics() {
+  console.log("1. Get topics from posts' filterTags fields")
   posts.find({ filterTags: { $exists: true }}).each(async post => {
     try {
       i++
-      console.log(i);
       if (post.filterTags.length != 0) {
         let k = 0;
         for (k = 0; k<post.filterTags.length; k++) {
@@ -53,14 +54,17 @@ function createTopics() {
       return Bluebird.all(promises);
     } catch(e) { console.log(e)}
   }).then(async () => {
+    console.log("  Number of processed posts: ", i)
+    console.log("\n2. Add topics to the Topics table")
     await addTopicsToDB()
   })
   .then(async () => {
+    console.log("\n3. Add topics to the Posts and increase topics' counters")
     await addTopicsToPosts()
-    .then(() => {
-      console.log("SUCCESS");
-      process.exit();
-    })
+    console.log('\n\n======================================');
+    console.log('4. Summary')
+    console.log(`Number of processed posts: ${i2}`)
+    process.exit();
   });
 }
 
@@ -76,7 +80,8 @@ async function addTopicsToPosts() {
   const postsWithTags = await posts.find({ filterTags: { $exists: true }, topicsGenerated: { $exists: false }})
 
   await asyncTopicToPosts(postsWithTags, async (post) => {
-
+    console.log('-----------------------------------')
+    i2 = i2 + 1;
     if (post.filterTags.length != 0) {
       for (k = 0; k<post.filterTags.length; k++) {
         const tag = post.filterTags[k]
@@ -84,6 +89,7 @@ async function addTopicsToPosts() {
         const tagName = tag.name;
 
         let existingTopic = await topics.findOne({ name: tagName })
+          console.log(`   Adding topic to the post ${i2}/${i}: ${tagName}`)
           await posts.update({ _id: post._id },
             {
               $push: {
@@ -94,6 +100,7 @@ async function addTopicsToPosts() {
               if (error) return;
             });
 
+            console.log(`   Increasing topic counter for topic: ${tagName} (${i2}/${i})`)
             await topics.update({ _id: existingTopic._id }, {
               $inc: { postCount: 1 }
             }, (err) => {
@@ -125,4 +132,5 @@ async function addTopicsToDB() {
   for (let k = 0; k<newTopics.length; k++) {
     await topics.insert(newTopics[k])
   }
+  console.log("   Done!")
 }
