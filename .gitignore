@@ -1,3 +1,6 @@
 node_modules/
 .env
 *.swp
+.env.example1
+.env-prod
+.env-stag
