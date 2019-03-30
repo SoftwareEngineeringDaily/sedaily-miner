@@ -40,6 +40,14 @@ posts.find({transcriptURL: {$exists: false}})
           break;
         }
       }
+
+      if (!transcriptURL) {
+        return posts.update({id: post.id}, {
+          $set: {
+            "transcriptURL": null
+          },
+        });
+      }
     });
     console.log(postsCount);
   })
