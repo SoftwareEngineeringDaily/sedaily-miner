@@ -65,8 +65,12 @@ function getImage(content) {
 }
 
 function splitContent(content) {
-  const splitFrom = content.search("<p><img");
-  const splitTo = content.search("</p>");
-  var result = content.slice(splitFrom, splitTo);
+  let contentToSplit = content
+  if (contentToSplit.startsWith("</p>")) {
+    contentToSplit = contentToSplit.substr(4);
+  }
+  const splitFrom = contentToSplit.search("<p><img");
+  const splitTo = contentToSplit.search("</p>");
+  var result = contentToSplit.slice(splitFrom, splitTo);
   return result
 }
