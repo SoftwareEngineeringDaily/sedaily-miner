@@ -20,16 +20,17 @@ const moment = require('moment');
 // }
 //
 //
+
+// NOTE: page 1 is the latest podcasts:
+let page = 11;
+let per_page = 100
 let query = {
-  per_page: 100,
+  per_page,
 };
 let wpQueryString = querystring.stringify(query);
 
 const WPAPI = require( 'wpapi' );
 const wp = new WPAPI({ endpoint: 'http://softwareengineeringdaily.com/wp-json/wp/v2/posts' });
-
-// NOTE: page 1 is the latest podcasts:
-let page = 1;
 
 function findAdd(post) {
   return posts.findOne({id: post.id})
@@ -40,7 +41,6 @@ function findAdd(post) {
       } else {
          console.log('post exists already', post.id);
       }
-
       return;
     })
 }
@@ -53,16 +53,12 @@ function getPosts(page) {
   rp(`http://softwareengineeringdaily.com/wp-json/wp/v2/posts?${wpQueryString}`)
     .then(function (response) {
       let promises = [];
-
       let postsResponse = JSON.parse(response);
-      console.log(postsResponse.length)
-      if (postsResponse.length === 0) return false;
+      console.log(postsResponse.length, 'Wordpress posts returned')
       for (let post of postsResponse) {
         post.date = moment(post.date).toDate();
-        // let updatePromise = posts.update({id: post.id}, post, {upsert: true});
         promises.push(findAdd(post));
       }
-
       return Bluebird.all(promises);
     })
     .then((result) => {
@@ -73,12 +69,19 @@ function getPosts(page) {
 	      return;
       };
 
-      page += 1;console.log('page', page)
+      page += 1;
+      console.log('page', page)
       getPosts(page)
     })
     .catch(function (err) {
-      console.log('ERROR', err);
-      process.exit();
+      if (err.message.indexOf('rest_post_invalid_page_number') > -1) {
+        console.log('Processed all Wordpress posts')
+        db.close();
+        process.exit();
+      } else {
+        console.log('ERROR', err)
+        process.exit(1)
+      }
     });
 }
 
