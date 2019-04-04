@@ -52,8 +52,9 @@ function getTags(page) {
         return;
       };
 
-      page += 1;console.log(page)
-      getTags(page)
+      page += 1;
+      console.log(page);
+      getTags(page);
     })
     .catch(function (err) {
       console.log(err)

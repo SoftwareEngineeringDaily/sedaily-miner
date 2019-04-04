@@ -38,5 +38,5 @@ posts.find({})
   .then((result) => {
     console.log(result[0])
     console.log("done");
-    process.exit();
+    db.close();
   })
