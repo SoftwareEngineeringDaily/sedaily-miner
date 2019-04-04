@@ -4,6 +4,38 @@ const posts = db.get('posts')
 const getUrls = require('get-urls');
 const Bluebird = require('bluebird');
 const rp = require('request-promise');
+const async = require('async');
+
+const CONCURRENCY = 5;
+var q = async.queue(function(post, callback) {
+  console.log('starting', post.id)
+  rp(post._links['wp:featuredmedia'][0].href)
+    .then((result) => {
+      let json = JSON.parse(result);
+      if (!json.guid.rendered) {
+        return callback();
+      }
+
+      let featuredImage = json.guid.rendered;
+      console.log(featuredImage)
+      posts.update({id: post.id}, {
+        $set: {
+          featuredImage,
+        },
+      })
+      .then(() => {
+        callback();
+      })
+    })
+    .catch((error) => {
+      callback(error);
+    })
+}, CONCURRENCY);
+
+q.drain = function() {
+  console.log('all items have been processed');
+  db.close();
+};
 
 let promises = [];
 posts.find({featuredImage: {$exists: false}})
@@ -12,28 +44,17 @@ posts.find({featuredImage: {$exists: false}})
     let values = urls.values();
     let mp3 = '';
     let mainImage = '';
-    if (!post._links['wp:featuredmedia']) return;
-    let medieaPromise = rp(post._links['wp:featuredmedia'][0].href)
-      .then((result) => {
-        let json = JSON.parse(result);
-        if (!json.guid.rendered) return;
-
-        let featuredImage = json.guid.rendered;
-        console.log(featuredImage)
-        return posts.update({id: post.id}, {
-          $set: {
-            featuredImage,
-          },
-        });
-      })
-      .catch((error) => { console.log(error); })
-    promises.push(medieaPromise);
+    if (!post._links['wp:featuredmedia']) {
+      console.log('no featuredmedia', post.id)
+      return;
+    } else {
+      // console.log("Getting img for post", post.id)
+    }
+    q.push(post, function (err) {
+      if (err) {
+        console.log(err.message);
+      } else {
+        console.log('finished processing', post.id);
+      }
+    });
   })
-  .then(() => {
-    return Bluebird.all(promises);
-  })
-  .then(() => {
-    console.log("done");
-    process.exit();
-  })
-  .catch((error) => { console.log(error); })
