@@ -22,7 +22,7 @@ const moment = require('moment');
 //
 
 // NOTE: page 1 is the latest podcasts:
-let page = 11;
+let page = 1;
 let per_page = 100
 let query = {
   per_page,
