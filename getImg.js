@@ -6,6 +6,7 @@ const Bluebird = require('bluebird');
 const rp = require('request-promise');
 const async = require('async');
 
+const CONCURRENCY = 5;
 var q = async.queue(function(post, callback) {
   console.log('starting', post.id)
   rp(post._links['wp:featuredmedia'][0].href)
@@ -29,7 +30,7 @@ var q = async.queue(function(post, callback) {
     .catch((error) => {
       callback(error);
     })
-}, 5);
+}, CONCURRENCY);
 
 q.drain = function() {
   console.log('all items have been processed');

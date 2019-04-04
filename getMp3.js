@@ -5,6 +5,7 @@ const getUrls = require('get-urls');
 const Bluebird = require('bluebird');
 const rp = require('request-promise');
 const request = require("request");
+const async = require('async');
 
 let promises = [];
 
@@ -13,43 +14,61 @@ let placeHolder = `http://traffic.libsyn.com/sedaily/2018_05_21_VoiceRecognition
 let placeHolder2 = `2018_05_21_VoiceRecognitionAnalysis.mp3`;
 let placeHolder3 = `4917`;
 
+const CONCURRENCY = 5;
+var q = async.queue(function(post, callback) {
+  request({
+    uri: post.link,
+  }, function(error, response, body) {
+    const urls = getUrls(body);
+    const values = urls.values();
+    var mp3 = null;
+    for (let url of values) {
+      let extension = url.substr(url.length - 4);
+
+      if (extension === '.mp3' && url.indexOf('libsyn.com/sedaily') >= 0) {
+        mp3 = url;
+        break;
+      }
+    }
+
+    if (mp3) {
+      // HACK so current build of iOS doesn't break:
+      let newPreContent = fakePlayer.split(placeHolder).join(mp3).split(placeHolder2).join('').split(placeHolder3).join(post.id);
+      let content = { protected: false, rendered: newPreContent + post.content.rendered};
+
+      console.log('mp3', mp3);
+      posts.update({id: post.id}, {
+        $set: {
+          mp3,
+          content
+        },
+      })
+      .then((result) => {
+        console.log('sucess updating', mp3);
+        callback();
+      })
+      .catch((error) => {
+        callback(error);
+      })
+    } else {
+      console.log('No mp3 for', post.id)
+      callback();
+    }
+  });
+}, CONCURRENCY);
+
+q.drain = function() {
+  console.log('all items have been processed');
+  db.close();
+};
 
 posts.find( {mp3: {$exists: false}})
   .each((post) => {
-
-    request({
-      uri: post.link,
-    }, function(error, response, body) {
-      const urls = getUrls(body);
-
-      let values = urls.values();
-      var mp3 = null;
-      for (let url of values) {
-        let extension = url.substr(url.length - 4);
-
-        if (extension === '.mp3' && url.indexOf('libsyn.com/sedaily') >= 0) {
-          mp3 = url;
-          break;
-        }
-      }
-
-      if (mp3) {
-        // HACK so current build of iOS doesn't break:
-        let newPreContent = fakePlayer.split(placeHolder).join(mp3).split(placeHolder2).join('').split(placeHolder3).join(post.id);
-
-        let content = { protected: false, rendered: newPreContent + post.content.rendered};
-
-
-        console.log('mp3', mp3);
-         posts.update({id: post.id}, {
-          $set: {
-            mp3,
-            content
-          },
-        })
-        .then((result) => { console.log('sucess updating', mp3); })
-        .catch((error) => { console.log(error); })
+    q.push(post, function (err) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('finished processing', post.id);
       }
     });
   })
-  .catch((error) => { console.log(error); })
