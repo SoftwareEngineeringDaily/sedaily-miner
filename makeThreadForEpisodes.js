@@ -10,7 +10,7 @@ var colors = require('colors/safe');
 const users = db.get('users')
 const async = require('async');
 
-var processingPosts = true;
+var processingPosts = false;
 const CONCURRENCY = 5;
 var q = async.queue(function(data, callback) {
   var post = data.post;
@@ -98,10 +98,11 @@ const forumAdminEmail  = process.env.FORUM_ADMIN_EMAIL ? process.env.FORUM_ADMIN
 
 users.findOne({email: forumAdminEmail}).then((user) => {
   if(!user) {
-      console.log(colors.red('Forum user not created yet.'));
+    console.log(colors.red('Forum user not created yet.'));
   } else {
     posts.find( {thread: {$exists: false}})
-    .each ((post) => {
+    .each((post) => {
+      processingPosts = true;
       q.push({post, user}, function (err, result) {
         if (err) {
           console.log(err);
@@ -110,7 +111,13 @@ users.findOne({email: forumAdminEmail}).then((user) => {
         }
       })
     }).then(() => {
-      processingPosts = false;
+      if (processingPosts) {
+        processingPosts = false;
+      } else {
+        console.log('All posts have threads already.')
+        q.kill();
+        db.close();
+      }
     })
   }
 });
