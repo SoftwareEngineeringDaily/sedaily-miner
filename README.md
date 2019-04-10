@@ -45,6 +45,9 @@ A script to download posts and auxilliary post details from software engineering
  - `node addTags.js`
  - `node generateTopics.js` (The process will end automatically)
 
+ #### - Add sponsorsContent to posts that do not have one
+ - `node generateSponsors.js`
+
 # Additional scripts
 
  #### - Clear topics
@@ -52,3 +55,9 @@ A script to download posts and auxilliary post details from software engineering
  Removes all topics from database and the "topics" field from posts' documents (WARNING - this script removes all topics from database and all users' actions (adding and assigning) topics can be lost)
 
  - `node removeTopicsFromPosts.js`
+
+ #### - Clear sponsorsContent from posts
+
+ Removes all sponsorsContents from posts' documents (WARNING - this script removes all sponsorsContents posts!)
+
+ - `node removeSponsorsFromPosts.js`
