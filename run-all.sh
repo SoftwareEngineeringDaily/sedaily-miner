@@ -22,3 +22,5 @@ echo 'Adding tags to DB'
 node addTags.js
 echo 'Generating topics'
 node generateTopics.js
+echo 'Generating sponsorsContent'
+node generateSponsors.js
