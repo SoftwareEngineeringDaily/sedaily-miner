@@ -1,11 +1,11 @@
 #!/bin/bash
 
-echo 'Getting all posts'
-node index.js
-echo 'Getting images'
-node getImg.js
-echo 'Getting mp3s'
-node getMp3.js
+# echo 'Getting all posts'
+# node index.js
+# echo 'Getting images'
+# node getImg.js
+# echo 'Getting mp3s'
+# node getMp3.js
 echo 'Generating clean description'
 node generateCleanDescription.js
 node makeThreadForEpisodes.js
@@ -22,3 +22,5 @@ echo 'Adding tags to DB'
 node addTags.js
 echo 'Generating topics'
 node generateTopics.js
+echo 'Generating sponsorsContent'
+node generateSponsors.js
