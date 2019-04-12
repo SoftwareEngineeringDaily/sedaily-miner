@@ -16,56 +16,53 @@ var q = async.queue(function(post, callback) {
     uri: post.link,
   }, function(error, response, body) {
     try {
-      let sponsorsContent = null
-      sponsorsContent = body.split('<h3>Sponsors</h3>')
 
-      if (sponsorsContent) {
-        if (sponsorsContent.length == 2) {
+      let sponsorsContent = body.split('<h3>Sponsors</h3>')
+      if (sponsorsContent.length == 1) {
+        sponsorsContent = body.split('<h2>Sponsors</h2>')
+      }
 
-          sponsors = sponsorsContent[1].trim();
-          sponsorsNoWhiteSpaces = sponsors.replace(/\>\s+\</g,'><')
-          let sponsorsCut = sponsorsNoWhiteSpaces.split('</div></div><div class="col-xs-12 col-md-6 col-lg-3">')
-          sponsorsContent = sponsorsCut[0];
+      if (sponsorsContent.length == 2) {
 
+        sponsors = sponsorsContent[1].trim();
+        sponsorsNoWhiteSpaces = sponsors.replace(/\>\s+\</g,'><')
+        let sponsorsCut = sponsorsNoWhiteSpaces.split('</div></div><div class="col-xs-12 col-md-6 col-lg-3">')
+        sponsorsContent = sponsorsCut[0];
+
+        posts.update({id: post.id}, {
+          $set: {
+            "sponsorsContent": sponsorsContent
+          },
+        })
+        .then((result) => {
+          console.log('success updating', post.title["rendered"]);
+          counter ++
+          callback();
+        })
+        .catch((error) => {
+          callback(error);
+        })
+      } else {
+        time_diff = date_now.diff(moment(post.date), 'days')
+        if (time_diff > SET_NULL_AFTER_DAYS) {
           posts.update({id: post.id}, {
             $set: {
-              "sponsorsContent": sponsorsContent
+              "sponsorsContent": null
             },
           })
           .then((result) => {
-            console.log('success updating', post.title["rendered"]);
             counter ++
+            console.log('Update null to: ', post.title["rendered"]);
             callback();
           })
           .catch((error) => {
             callback(error);
           })
-          // console.log("Add sponsors to: ", post.title["rendered"]);
         } else {
-          time_diff = date_now.diff(moment(post.date), 'days')
-          if (time_diff > SET_NULL_AFTER_DAYS) {
-            posts.update({id: post.id}, {
-              $set: {
-                "sponsorsContent": null
-              },
-            })
-            .then((result) => {
-              counter ++
-              console.log('Update null to: ', post.title["rendered"]);
-              callback();
-            })
-            .catch((error) => {
-              callback(error);
-            })
-          } else {
-            console.log('No sponsors for:', post.title["rendered"])
-            callback();
-          }
+          // Posts without sponsors but younger than 30 days:
+          console.log('Skipped post without sponsors, younger than 30 days:', post.title["rendered"])
+          callback();
         }
-      } else {
-        counter ++
-        console.log('No sponsors for:', post.title["rendered"])
-        callback();
       }
 
     } catch (e) {
