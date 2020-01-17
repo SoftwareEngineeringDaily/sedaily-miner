@@ -100,7 +100,7 @@ function findAdd(post) {
 
           return;
         });
-      } else {
+      } else if (post.slug) {
         console.log('post exists already ', postFound._id, postFound.search_index);
         if (postFound.search_index && isArray(postFound.search_index)) {
           post.objectID = postFound.search_index[0];
@@ -108,10 +108,6 @@ function findAdd(post) {
 
         if (postFound._id) {
           post._id = postFound._id
-        }
-
-        if (!post.slug) {
-          return;
         }
 
         return postsIndex[post.objectID ? 'saveObjects' : 'addObjects']([ prepSearchObj(post) ], (err, content) => {
@@ -124,6 +120,7 @@ function findAdd(post) {
            );
         });
       }
+
       return;
     })
 }
