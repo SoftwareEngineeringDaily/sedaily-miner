@@ -83,7 +83,6 @@ function prepSearchObj(obj) {
 function findAdd(post) {
   return posts.findOne({id: post.id})
     .then((postFound) => {
-
       if (!postFound) {
         console.log('new post!');
         postsIndex.addObjects([ prepSearchObj(post) ], async (err, content) => {
@@ -100,6 +99,25 @@ function findAdd(post) {
           }
 
           return;
+        });
+      } else if (post.slug && process.env.REINDEX) {
+        console.log('post exists already ', postFound._id, postFound.search_index);
+        if (postFound.search_index && isArray(postFound.search_index)) {
+          post.objectID = postFound.search_index[0];
+        }
+
+        if (postFound._id) {
+          post._id = postFound._id
+        }
+
+        return postsIndex[post.objectID ? 'saveObjects' : 'addObjects']([ prepSearchObj(post) ], (err, content) => {
+          return posts.update(
+            { _id: postFound._id },
+            {
+              ...postFound,
+              search_index: content ? content.objectIDs : post.search_index ? post.search_index : null
+            }
+           );
         });
       }
 
