@@ -11,6 +11,7 @@ const posts = db.get('posts')
 const tags = db.get('tags')
 const moment = require('moment')
 const striptags = require('striptags')
+const parsePdf = require('./parsePdf')
 
 // @TODO: can we query by modified date? https://github.com/WP-API/WP-API/issues/472
 // let query = {
@@ -82,7 +83,8 @@ function prepSearchObj(obj) {
 
 function findAdd(post) {
   return posts.findOne({id: post.id})
-    .then((postFound) => {
+    .then(async (postFound) => {
+
       if (!postFound) {
         console.log('new post!');
         postsIndex.addObjects([ prepSearchObj(post) ], async (err, content) => {
@@ -100,8 +102,9 @@ function findAdd(post) {
 
           return;
         });
-      } else if (post.slug && process.env.REINDEX) {
-        console.log('post exists already ', postFound._id, postFound.search_index);
+      }
+      else if (post.slug && process.env.REINDEX === 'true') {
+        console.log('post exists already');
         if (postFound.search_index && isArray(postFound.search_index)) {
           post.objectID = postFound.search_index[0];
         }
@@ -114,11 +117,20 @@ function findAdd(post) {
           return posts.update(
             { _id: postFound._id },
             {
-              ...postFound,
-              search_index: content ? content.objectIDs : post.search_index ? post.search_index : null
+              $set: {
+                search_index: content ? content.objectIDs : post.search_index ? post.search_index : null
+              }
             }
            );
         });
+      }
+      else if (postFound && postFound.transcriptUrl && !postFound.transcript) {
+        console.log('setting transcript')
+        let transcript = await parsePdf(postFound.transcriptUrl)
+        return posts.update(
+          { _id: postFound._id },
+          { $set: { transcript } }
+        )
       }
 
       return;
@@ -165,4 +177,4 @@ function getPosts(page) {
     });
 }
 
-getPosts(page);
+getPosts(page)

@@ -28,6 +28,7 @@
     "moment": "^2.18.1",
     "monk": "^4.0.0",
     "node-html-parser": "^1.1.12",
+    "pdfreader": "^1.0.6",
     "request": "^2.87.0",
     "request-promise": "^4.2.0",
     "striptags": "^3.1.1",
