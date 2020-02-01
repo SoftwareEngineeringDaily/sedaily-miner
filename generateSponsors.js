@@ -1,16 +1,19 @@
 require('dotenv').config()
+
+const keys = require('lodash/keys')
 const db = require('monk')(process.env.MONGO_DB)
 const posts = db.get('posts')
-const rp = require("request-promise");
-const moment = require("moment");
-const async = require('async');
-const request = require("request");
+const rp = require("request-promise")
+const moment = require("moment")
+const async = require('async')
+const request = require("request")
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom
+const SET_NULL_AFTER_DAYS = 30 // The number of days after script sets transcript URL to null if not set yet
+const CONCURRENCY = 5
 
-const SET_NULL_AFTER_DAYS = 30; // The number of days after script sets transcript URL to null if not set yet
 let counter = 0
-const CONCURRENCY = 5;
-
-var q = async.queue(function(post, callback) {
+let q = async.queue(function(post, callback) {
   date_now = moment.utc();
   request({
     uri: post.link,
@@ -18,20 +21,40 @@ var q = async.queue(function(post, callback) {
     try {
 
       let sponsorsContent = body.split('<h3>Sponsors</h3>')
+      let _sponsors = []
+      let sponsorImageEls = []
+      let sponsorImageKeys = []
+      let dom
+
       if (sponsorsContent.length == 1) {
         sponsorsContent = body.split('<h2>Sponsors</h2>')
       }
 
       if (sponsorsContent.length == 2) {
 
-        sponsors = sponsorsContent[1].trim();
+        let sponsors = sponsorsContent[1].trim()
         sponsorsNoWhiteSpaces = sponsors.replace(/\>\s+\</g,'><')
         let sponsorsCut = sponsorsNoWhiteSpaces.split('</div></div><div class="col-xs-12 col-md-6 col-lg-3">')
-        sponsorsContent = sponsorsCut[0];
+        sponsorsContent = sponsorsCut[0]
+
+        // Parse sponsor data
+        dom = new JSDOM(sponsorsContent)
+        sponsorImageEls = dom.window.document.querySelectorAll('img')
+        sponsorImageKeys = keys(sponsorImageEls)
+        sponsors = sponsorImageKeys.map(imageKey => {
+          let img = sponsorImageEls[imageKey]
+          let imageSrc = img.getAttribute('src') || ''
+
+          return {
+            image: imageSrc.split('?')[0],
+            url: img.parentElement.getAttribute('href') || '',
+          }
+        })
 
         posts.update({id: post.id}, {
           $set: {
-            "sponsorsContent": sponsorsContent
+            sponsorsContent,
+            sponsors,
           },
         })
         .then((result) => {
@@ -78,10 +101,10 @@ q.drain = function() {
   db.close();
 };
 let progress = 0
-posts.count( {sponsorsContent: {$exists: false}})
+posts.count({ sponsors: { $exists: false } })
 .then((c) => {
   if (c > 0) {
-    posts.find( {sponsorsContent: {$exists: false}})
+    posts.find({ sponsors: { $exists: false } })
       .each((post) => {
         q.push(post, function (err) {
           if (err) {

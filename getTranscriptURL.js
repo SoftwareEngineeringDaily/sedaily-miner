@@ -32,6 +32,8 @@ posts.find({transcriptURL: {$exists: false}})
       let transcriptURL = null;
       let transcript = ''
 
+      console.log('body ', body)
+
       for (let url of values) {
         let extension = url.substr(url.length - 4);
 

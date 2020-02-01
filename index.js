@@ -6,6 +6,7 @@ const db = require('monk')(process.env.MONGO_DB)
 const rp = require('request-promise')
 const querystring = require('querystring')
 const algoliasearch = require('algoliasearch')
+const Throttle = require('promise-parallel-throttle')
 const fs = require('fs')
 const posts = db.get('posts')
 const tags = db.get('tags')
@@ -55,7 +56,6 @@ function prepSearchObj(obj) {
     'status',
     'type',
     'link',
-    'author',
     'featured_media',
     'search_index',
     'objectID',
@@ -147,11 +147,18 @@ function getPosts(page) {
       let promises = [];
       let postsResponse = JSON.parse(response);
       console.log(postsResponse.length, 'Wordpress posts returned')
-      for (let post of postsResponse) {
-        post.date = moment(post.date).toDate();
-        promises.push(findAdd(post));
-      }
-      return Promise.all(promises);
+      // for (let post of postsResponse) {
+      //   post.date = moment(post.date).toDate();
+      //   promises.push(findAdd(post));
+      // }
+
+      const queue = postsResponse.map(post => {
+        return async () => {
+          await findAdd(post)
+        }
+      })
+
+      return Throttle.all(queue);
     })
     .then((result) => {
       if (!result) {
