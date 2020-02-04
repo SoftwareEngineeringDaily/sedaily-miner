@@ -99,32 +99,32 @@ async function index(url) {
   lines = await JSON.parse(JSON.stringify(lines))
   lines.forEach(page => {
     flatten(page).forEach(p => {
-        let regExpStrong = /\[[0-9]+?:[0-9]+?:[0-9]+?.+:/g
-        let isValid = (
-          p !== 'Transcript' &&
-          p !== '© 2017 Software Engineering Daily' &&
-          p.search(/([A-Z])\w+\s[0-9]/g) < 0 &&
-          p.search(/\\[a-z]\d+/g) < 0
-        )
+      let regExpStrong = /\[[0-9]+?:[0-9]+?:[0-9]+?.+:/g
+      let isValid = (
+        p !== 'Transcript' &&
+        p !== '© 2017 Software Engineering Daily' &&
+        p.search(/([A-Z])\w+\s[0-9]/g) < 0 &&
+        p.search(/\\[a-z]\d+/g) < 0
+      )
 
-        isEnd = (p.trim() === '[END]' || isEnd)
+      isEnd = (p.trim() === '[END]' || isEnd)
 
-        p = p.replace(regExpStrong, txt => {
-          return `</p><p><strong>${txt}</strong>`
-        })
-
-        if (p.trim() === '[INTRODUCTION]') {
-          p = `<p>${p.trim()}`
-        }
-
-        if ([ '[SPONSOR MESSAGE]', '[INTERVIEW]', '[INTERVIEW CONTINUED]', '[END OF INTERVIEW]' ].indexOf(p) >= 0) {
-          p = `</p><p>${p.trim()}`
-        }
-
-        if (isValid && !isEnd) {
-          transcriptHtml += p
-        }
+      p = p.replace(regExpStrong, txt => {
+        return `</p><p><strong>${txt}</strong>`
       })
+
+      if (p.trim() === '[INTRODUCTION]') {
+        p = `<p>${p.trim()}`
+      }
+
+      if ([ '[SPONSOR MESSAGE]', '[INTERVIEW]', '[INTERVIEW CONTINUED]', '[END OF INTERVIEW]' ].indexOf(p) >= 0) {
+        p = `</p><p>${p.trim()}`
+      }
+
+      if (isValid && !isEnd) {
+        transcriptHtml += p
+      }
+    })
   })
 
   transcriptHtml += `${transcriptHtml}</p><br />`

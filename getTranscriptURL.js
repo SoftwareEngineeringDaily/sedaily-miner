@@ -32,15 +32,13 @@ posts.find({transcriptURL: {$exists: false}})
       let transcriptURL = null;
       let transcript = ''
 
-      console.log('body ', body)
-
       for (let url of values) {
         let extension = url.substr(url.length - 4);
 
         if (extension === '.pdf') {
           transcriptURL = url;
           transcript = await parsePdf(url)
-          console.log(transcriptURL);
+          console.log('transcriptURL ', transcriptURL);
 
           await posts.update({id: post.id}, {
             $set: {
@@ -77,7 +75,7 @@ posts.find({transcriptURL: {$exists: false}})
     return Bluebird.all(promises);
   })
   .then(() => {
-    console.log("done");
+    console.log('done');
     process.exit();
   })
   .catch((error) => { console.log(error); })
