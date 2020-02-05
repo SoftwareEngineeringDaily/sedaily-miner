@@ -1,11 +1,14 @@
 require('dotenv').config()
+
 const db = require('monk')(process.env.MONGO_DB)
+const http = require('http')
 const posts = db.get('posts')
-const getUrls = require('get-urls');
-const Bluebird = require('bluebird');
-const rp = require('request-promise');
-const request = require("request");
-const async = require('async');
+const getMP3Duration = require('get-mp3-duration')
+const getUrls = require('get-urls')
+const Bluebird = require('bluebird')
+const rp = require('request-promise')
+const request = require("request")
+const async = require('async')
 
 let promises = [];
 
@@ -14,11 +17,48 @@ let placeHolder = `http://traffic.libsyn.com/sedaily/2018_05_21_VoiceRecognition
 let placeHolder2 = `2018_05_21_VoiceRecognitionAnalysis.mp3`;
 let placeHolder3 = `4917`;
 
-const CONCURRENCY = 5;
+const getMp3Buffer = (mp3) => {
+  return new Promise((resolve, reject) => {
+    // http.get(mp3, (res) => {
+    //   let data = []
+
+    //   res.setEncoding('binary')
+    //   res.on('data', (chunk) => {
+    //       data.push(chunk)
+    //   })
+
+    //   res.on('error', () => {
+    //     return reject()
+    //   })
+
+    //   res.on('end', () => {
+    //     let buffer = Buffer.concat(data)
+    //     console.log('buffer ', buffer.toString('base64'))
+    //     return resolve(buffer)
+    //   })
+    // })
+
+    http.get(mp3, (res) => {
+      const chunks = []
+
+      res.on('data', chunk => {
+        console.log('chunk? ', chunk)
+        chunks.push(Buffer.from(chunk))
+      }).on('end', () => {
+        const buffer = Buffer.concat(chunks)
+        console.log('chunks ', chunks)
+        console.log(buffer.toString('base64'))
+        return resolve(buffer)
+      })
+    })
+  })
+}
+
+const CONCURRENCY = 5
 var q = async.queue(function(post, callback) {
   request({
     uri: post.link,
-  }, function(error, response, body) {
+  }, async (error, response, body) => {
     const urls = getUrls(body);
     const values = urls.values();
     var mp3 = null;
@@ -33,10 +73,17 @@ var q = async.queue(function(post, callback) {
 
     if (mp3) {
       // HACK so current build of iOS doesn't break:
-      let newPreContent = fakePlayer.split(placeHolder).join(mp3).split(placeHolder2).join('').split(placeHolder3).join(post.id);
-      let content = { protected: false, rendered: newPreContent + post.content.rendered};
+      let mp3Buffer = await getMp3Buffer(mp3)
+      console.log(mp3Buffer.toString('base64'))
+      let mp3Duration = getMP3Duration(mp3Buffer)
+      let newPreContent = fakePlayer.split(placeHolder).join(mp3).split(placeHolder2).join('').split(placeHolder3).join(post.id)
+      let content = {
+        protected: false,
+        rendered: newPreContent + post.content.rendered
+      }
 
-      console.log('mp3', mp3);
+      console.log('mp3 ', mp3)
+      console.log('mp3Duration ', mp3Duration)
       posts.update({id: post.id}, {
         $set: {
           mp3,

@@ -4,14 +4,16 @@
 */
 
 require('dotenv').config()
-const HTML = require('html-parse-stringify');
-const _ =require('lodash');
+
+const HTML = require('html-parse-stringify')
+const _ =require('lodash')
 const db = require('monk')(process.env.MONGO_DB)
 const posts = db.get('posts')
-const Bluebird = require('bluebird');
-const getUrls = require('get-urls');
-const rp = require("request-promise");
-const moment = require("moment");
+const Bluebird = require('bluebird')
+const getUrls = require('get-urls')
+const rp = require('request-promise')
+const moment = require('moment')
+const parsePdf = require('./parsePdf')
 
 const SET_NULL_AFTER_DAYS = 30; // The number of days after script sets transcript URL to null if not set yet
 
@@ -27,18 +29,21 @@ posts.find({transcriptURL: {$exists: false}})
     .then(async function(body) {
       const urls = getUrls(body);
       let values = urls.values();
+      let transcriptURL = null;
+      let transcript = ''
 
-      var transcriptURL = null;
       for (let url of values) {
         let extension = url.substr(url.length - 4);
 
         if (extension === '.pdf') {
           transcriptURL = url;
-          console.log(transcriptURL);
+          transcript = await parsePdf(url)
+          console.log('transcriptURL ', transcriptURL);
 
           await posts.update({id: post.id}, {
             $set: {
-              "transcriptURL": transcriptURL
+              "transcriptURL": transcriptURL,
+              "transcript": transcript,
             },
           });
           break;
@@ -70,7 +75,7 @@ posts.find({transcriptURL: {$exists: false}})
     return Bluebird.all(promises);
   })
   .then(() => {
-    console.log("done");
+    console.log('done');
     process.exit();
   })
   .catch((error) => { console.log(error); })
