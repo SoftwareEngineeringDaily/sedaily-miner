@@ -41,7 +41,7 @@ const client = algoliasearch(
 );
 
 const postsIndex = client.initIndex(
-  process.env.NODE_ENV === 'production' ? 'prod_POSTS' : 'dev_POSTS'
+  process.env.ALGOLIA_POSTS_INDEX
 );
 
 function prepSearchObj(obj) {
