@@ -62,7 +62,7 @@ posts
     })
 
     promises.push(requestPromise)
-    console.log(postsCount)
+    console.log('posts count: ', postsCount)
   })
   .then(() => {
     console.log('BLUEBIRD')

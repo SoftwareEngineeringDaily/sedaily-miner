@@ -26,3 +26,5 @@ echo 'Generating topics'
 node generateTopics.js
 echo 'Generating sponsorsContent'
 node generateSponsors.js
+echo 'Indexing posts for search'
+node indexSearch.js
