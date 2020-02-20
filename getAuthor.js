@@ -49,6 +49,7 @@ posts
         }
       }
 
+      console.log('updating author... ', post.id, name)
       await posts.update({ id: post.id }, {
         $set: {
           "author": { name, url, image },
@@ -62,7 +63,7 @@ posts
     })
 
     promises.push(requestPromise)
-    console.log(postsCount)
+    console.log('posts count: ', postsCount)
   })
   .then(() => {
     console.log('BLUEBIRD')

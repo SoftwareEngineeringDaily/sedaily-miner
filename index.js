@@ -5,7 +5,6 @@ const isArray = require('lodash/isArray')
 const db = require('monk')(process.env.MONGO_DB)
 const rp = require('request-promise')
 const querystring = require('querystring')
-const algoliasearch = require('algoliasearch')
 const Throttle = require('promise-parallel-throttle')
 const fs = require('fs')
 const posts = db.get('posts')
@@ -35,95 +34,18 @@ let query = {
 }
 let wpQueryString = querystring.stringify(query)
 
-const WPAPI = require('wpapi');
-const wp = new WPAPI({ endpoint: 'http://softwareengineeringdaily.com/wp-json/wp/v2/posts' });
-const client = algoliasearch(
-  process.env.ALGOLIA_APP_ID,
-  process.env.ALGOLIA_API_KEY
-);
-
-const postsIndex = client.initIndex(
-  process.env.ALGOLIA_POSTS_INDEX
-);
-
-function prepSearchObj(obj) {
-  const validKeys = [
-    '_id',
-    'id',
-    'date',
-    'modified',
-    'slug',
-    'status',
-    'type',
-    'link',
-    'featured_media',
-    'search_index',
-    'objectID',
-  ]
-
-  let _keys = keys(obj)
-  let _obj = {}
-
-  if (obj.title && obj.title.rendered) {
-    _obj.title = obj.title.rendered
-  }
-
-  if (obj.content && obj.content.rendered) {
-    _obj.content = striptags(obj.content.rendered)
-  }
-
-  _keys.forEach(key => {
-    if (validKeys.indexOf(key) >= 0) {
-      _obj[key] = obj[key]
-    }
-  })
-
-  return _obj
-}
+const WPAPI = require('wpapi')
+const wp = new WPAPI({ endpoint: 'http://softwareengineeringdaily.com/wp-json/wp/v2/posts' })
 
 function findAdd(post) {
-  return posts.findOne({id: post.id})
+  return posts.findOne({ id: post.id })
     .then(async (postFound) => {
 
       if (!postFound) {
-        console.log('new post!');
-        postsIndex.addObjects([ prepSearchObj(post) ], async (err, content) => {
-          post.search_index = content ? content.objectIDs : null;
-
-          let _post = await posts.insert(post);
-
-          // Update search with `_id`
-          if (_post.search_index && isArray(_post.search_index)) {
-            _post.objectID = _post.search_index[0];
-            return postsIndex.saveObjects([ prepSearchObj(_post) ], async (err, content) => {
-              return;
-            })
-          }
-
-          return;
-        });
+        console.log('new post!')
+        return posts.insert(post)
       }
-      else if (post.slug && process.env.REINDEX === 'true') {
-        console.log('post exists already');
-        if (postFound.search_index && isArray(postFound.search_index)) {
-          post.objectID = postFound.search_index[0];
-        }
-
-        if (postFound._id) {
-          post._id = postFound._id
-        }
-
-        return postsIndex[post.objectID ? 'saveObjects' : 'addObjects']([ prepSearchObj(post) ], (err, content) => {
-          return posts.update(
-            { _id: postFound._id },
-            {
-              $set: {
-                search_index: content ? content.objectIDs : post.search_index ? post.search_index : null
-              }
-            }
-           );
-        });
-      }
+      // Handles previously stored posts
       else if (postFound && postFound.transcriptUrl && !postFound.transcript) {
         console.log('setting transcript')
         let transcript = await parsePdf(postFound.transcriptUrl)
@@ -133,7 +55,7 @@ function findAdd(post) {
         )
       }
 
-      return;
+      return
     })
 }
 
@@ -151,7 +73,7 @@ function getPosts(page) {
       const queue = postsResponse.map(post => {
         return async () => {
           post.date = moment(post.date).toDate()
-          await findAdd(post)
+          return await findAdd(post)
         }
       })
 
