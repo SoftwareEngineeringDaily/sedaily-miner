@@ -49,7 +49,6 @@ posts
         }
       }
 
-      console.log('updating author... ', post.id, name)
       await posts.update({ id: post.id }, {
         $set: {
           "author": { name, url, image },
