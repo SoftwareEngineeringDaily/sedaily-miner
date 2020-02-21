@@ -96,7 +96,7 @@ async function readlines(buffer, xwidth) {
 
 async function index(url) {
   let buffer = await bufferize(url)
-  let lines = await readlines(buffer)
+  let lines = await readlines(buffer, 1)
   let transcriptHtml = ''
   let isEnd = false
 

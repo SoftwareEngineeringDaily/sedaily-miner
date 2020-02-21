@@ -19,7 +19,7 @@ const SET_NULL_AFTER_DAYS = 30; // The number of days after script sets transcri
 
 let promises = [];
 let postsCount = 0;
-posts.find({transcriptURL: {$exists: false}})
+posts.find({ transcriptURL: { $exists: false } })
   .each((post) => {
     postsCount++
 
