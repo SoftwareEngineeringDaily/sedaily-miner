@@ -14,6 +14,8 @@ node makeThreadForEpisodes.js
 # node links-add-images.js # hangs up, do we even need?
 echo 'Getting transcript URLs'
 node getTranscriptURL.js
+echo 'Getting transcript'
+node getTranscript.js
 echo 'Getting authors'
 node getAuthor.js
 echo 'Getting guest images'

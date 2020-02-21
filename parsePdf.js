@@ -20,13 +20,14 @@ async function bufferize(url) {
       res.on('data', d => {
         buff = Buffer.concat([ buff, d ])
       })
+
       res.on('end', () => {
         resolve(buff)
       })
     })
 
     req.on('error', err => {
-      console.error('https request error: ' + err)
+      reject(err)
     })
 
     req.end()
@@ -47,7 +48,8 @@ async function readlines(buffer, xwidth) {
 
     new pdfreader.PdfReader().parseBuffer(buffer, (err, item) => {
       if (err) {
-        return console.log('pdf reader error: ' + err)
+        console.log('pdf reader error: ' + err)
+        return resolve()
       }
 
       if (!item) {
@@ -63,7 +65,7 @@ async function readlines(buffer, xwidth) {
       if (item && item.page) {
         pg = item.page - 1
         pdftxt[pg] = []
-        return
+        return resolve(pdftxt)
       }
 
       if (item.text) {
@@ -85,6 +87,8 @@ async function readlines(buffer, xwidth) {
         if (t == 0) {
           pdftxt[pg].push([ item.text, item.y, item.x ])
         }
+
+        return resolve(pdftxt)
       }
     })
   })
