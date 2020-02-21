@@ -19,7 +19,7 @@ const SET_NULL_AFTER_DAYS = 30; // The number of days after script sets transcri
 
 let promises = [];
 let postsCount = 0;
-posts.find({transcriptURL: {$exists: false}})
+posts.find({ transcriptURL: { $exists: false } })
   .each((post) => {
     postsCount++
 
@@ -30,22 +30,18 @@ posts.find({transcriptURL: {$exists: false}})
       const urls = getUrls(body);
       let values = urls.values();
       let transcriptURL = null;
-      let transcript = ''
 
       for (let url of values) {
         let extension = url.substr(url.length - 4);
 
         if (extension === '.pdf') {
           transcriptURL = url;
-          transcript = await parsePdf(url)
           console.log('transcriptURL ', transcriptURL);
+          await posts.update(
+            { id: post.id },
+            { $set: { transcriptURL } }
+          )
 
-          await posts.update({id: post.id}, {
-            $set: {
-              "transcriptURL": transcriptURL,
-              "transcript": transcript,
-            },
-          });
           break;
         }
       }

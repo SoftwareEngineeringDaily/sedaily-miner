@@ -85,6 +85,7 @@ const indexSearch = () => {
           let thread = _post.thread ? await threads.findOne(_post.thread) : { commentsCount: 0 }
 
           _post.thread = {
+            _id: _post.thread,
             commentsCount: thread.commentsCount || 0,
           }
 
