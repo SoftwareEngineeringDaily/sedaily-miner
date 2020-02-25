@@ -19,6 +19,15 @@ const postsIndex = client.initIndex(
   process.env.ALGOLIA_POSTS_INDEX
 );
 
+const convertNumberCodes = (text) => {
+  return text
+    .replace(/&#8211;/g, ' — ')
+    .replace(/&#8230;/g, '...')
+    .replace(/&#8217;/g, '’')
+    .replace(/&#8220;/g, '“')
+    .replace(/&#8221;/g, '”')
+}
+
 function prepSearchObj(obj) {
   const validKeys = [
     '_id',
@@ -34,6 +43,7 @@ function prepSearchObj(obj) {
     'link',
     'title',
     'author',
+    'excerpt',
     'score',
     'mp3',
     'thread',
@@ -49,13 +59,27 @@ function prepSearchObj(obj) {
     objectID: obj.id
   }
 
+  // Provide a clean title
   if (obj.title && obj.title.rendered) {
     _obj._title = obj.title.rendered
   }
 
+  // Provide a clean description
+  if (obj.excerpt && obj.excerpt.rendered) {
+    let description = obj.excerpt.rendered
+      .replace(/<p[^>]*>Podcast:\s.+?<\/p>/g, '') // Remove download info
+      .replace(/<a[^>]*>.+?<\/a>/g, '') // Remove links
+      .replace(/http.{0,}Podcast: Play in new window \| Download\s/g, '') // Remove Podcast link from description
+      .match(/<p[^>]*>.+?<\/p>/g) // Seperate paragraphs
+
+    _obj.description = convertNumberCodes((description.length > 0) ? description[0] : '')
+    _obj.description = _obj.description.replace(/<p[^>]*>|<\/p>/g, '')
+  }
+
+  // Trim Content
   if (obj.content && obj.content.rendered) {
     _obj.content = {
-      rendered: striptags(obj.content.rendered).slice(0, 256)
+      rendered: obj.content.rendered.slice(0, 512)
     }
   }
 
@@ -89,7 +113,7 @@ const indexSearch = () => {
             commentsCount: thread.commentsCount || 0,
           }
 
-          console.log('indexing ', _post._title)
+          console.log('indexing ', _post._id)
           return await postsIndex.saveObject(_post)
         }
       })
