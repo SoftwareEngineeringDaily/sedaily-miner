@@ -3,11 +3,11 @@ require('dotenv').config()
 const keys = require('lodash/keys')
 const db = require('monk')(process.env.MONGO_DB)
 const posts = db.get('posts')
-const rp = require("request-promise")
-const moment = require("moment")
+const rp = require('request-promise')
+const moment = require('moment')
 const async = require('async')
-const request = require("request")
-const jsdom = require("jsdom");
+const request = require('request')
+const jsdom = require('jsdom');
 const { JSDOM } = jsdom
 const SET_NULL_AFTER_DAYS = 30 // The number of days after script sets transcript URL to null if not set yet
 const CONCURRENCY = 5
