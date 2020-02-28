@@ -9,7 +9,7 @@ const getTranscript = async () => {
   const options = {}
   const query = {
     transcriptURL: { $regex: 'softwareengineeringdaily.com' },
-    transcript: { $exists: false },
+    // transcript: { $exists: false },
   }
 
   const reply = await posts.find(query, options)

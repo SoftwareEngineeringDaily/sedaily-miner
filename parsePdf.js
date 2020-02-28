@@ -106,7 +106,6 @@ async function index(url) {
       let regExpStrong = /\[[0-9]+?:[0-9]+?:[0-9]+?.+:/g
       let isValid = (
         p !== 'Transcript' &&
-        p !== '© 2017 Software Engineering Daily' &&
         p.search(/([A-Z])\w+\s[0-9]/g) < 0 &&
         p.search(/\\[a-z]\d+/g) < 0
       )
@@ -131,6 +130,10 @@ async function index(url) {
     })
   })
 
+  // Removes page footers
+  transcriptHtml = transcriptHtml.replace(/©\s20(\d+) Software Engineering Daily\0\d+/g, '')
+
+  // Closes transcript HTML
   transcriptHtml += `${transcriptHtml}</p><br />`
 
   return transcriptHtml
