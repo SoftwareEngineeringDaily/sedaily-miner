@@ -131,7 +131,7 @@ async function index(url) {
   })
 
   // Removes page footers
-  transcriptHtml = transcriptHtml.replace(/©\s20(\d+) Software Engineering Daily\0\d+/g, '')
+  transcriptHtml = transcriptHtml.replace(/©\s20(\d+) Software Engineering Daily\0?\d+/g, '')
 
   // Closes transcript HTML
   transcriptHtml += `${transcriptHtml}</p><br />`
