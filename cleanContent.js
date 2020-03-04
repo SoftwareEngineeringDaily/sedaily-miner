@@ -4,8 +4,6 @@ const Parser = require('node-html-parser')
 const Throttle = require('promise-parallel-throttle')
 const db = require('monk')(process.env.MONGO_DB)
 const posts = db.get('posts')
-const jsdom = require('jsdom')
-const { JSDOM } = jsdom
 
 const getContent = async () => {
   const options = {}
@@ -52,10 +50,8 @@ const getContent = async () => {
         .filter(el => !!(el))
         .join('')
 
-      console.log('html elements ', cleanedContent)
-      console.log(`[SUCCESS]: ${post.id}: ${post.title.rendered}`)
-
       try {
+        console.log(`[SUCCESS]: ${post.id}: ${post.title.rendered}`)
         await posts.update({ id: post.id }, { $set: { cleanedContent } })
       }
       catch (err) {
