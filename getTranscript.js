@@ -9,7 +9,10 @@ const getTranscript = async () => {
   const options = {}
   const query = {
     transcriptURL: { $regex: 'softwareengineeringdaily.com' },
-    transcript: { $exists: false },
+    $or: [
+      { transcript: { $exists: false } },
+      { transcript: { $regex: '© 2020 Software Engineering Daily' } },
+    ],
   }
 
   const reply = await posts.find(query, options)
@@ -17,7 +20,7 @@ const getTranscript = async () => {
     return async () => {
       try {
         const transcript = await parsePdf(post.transcriptURL)
-        console.log(`[SUCCESS]: ${post.title.rendered} - ${post.transcriptURL} `, !!(transcript))
+        console.log(`[SUCCESS]: ${post.id} ${post.title.rendered} - ${post.transcriptURL} `, !!(transcript))
         await posts.update({ id: post.id }, { $set: { transcript } })
       }
       catch (err) {
