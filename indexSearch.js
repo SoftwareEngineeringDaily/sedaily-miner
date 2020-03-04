@@ -97,7 +97,7 @@ function prepSearchObj(obj) {
 }
 
 const indexSearch = () => {
-  let query = {}
+  let query = { search_index: { $exists: false } }
   let options = {}
 
   posts
@@ -113,8 +113,12 @@ const indexSearch = () => {
             commentsCount: thread.commentsCount || 0,
           }
 
-          console.log('indexing ', _post._id)
-          return await postsIndex.saveObject(_post)
+          console.log('indexing ', _post.id)
+          return await postsIndex
+            .saveObject(_post)
+            .then(async ({ objectID: search_index }) => {
+              return await posts.update({ id: _post.id }, { $set: { search_index } })
+            })
         }
       })
 
