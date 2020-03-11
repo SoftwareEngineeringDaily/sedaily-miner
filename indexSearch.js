@@ -100,7 +100,7 @@ function prepSearchObj(obj) {
 }
 
 const indexSearch = () => {
-  let query = {} // { search_index: { $exists: false } }
+  let query = { search_index: { $exists: false } }
   let options = {}
 
   posts
