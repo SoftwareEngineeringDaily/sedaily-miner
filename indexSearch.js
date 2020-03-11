@@ -42,6 +42,7 @@ function prepSearchObj(obj) {
     'type',
     'link',
     'title',
+    'topics',
     'author',
     'excerpt',
     'score',
@@ -56,7 +57,8 @@ function prepSearchObj(obj) {
 
   let _keys = keys(obj)
   let _obj = {
-    objectID: obj.id
+    objectID: obj.id,
+    likeCount: obj.likeCount || 0,
   }
 
   // Provide a clean title
@@ -84,7 +86,8 @@ function prepSearchObj(obj) {
   }
 
   if (obj.date) {
-    _obj.date = moment(_obj.date).toDate()
+    _obj.date = moment(obj.date).toDate()
+    _obj.date_timestamp = new Date(obj.date).getTime()
   }
 
   _keys.forEach(key => {
@@ -97,7 +100,7 @@ function prepSearchObj(obj) {
 }
 
 const indexSearch = () => {
-  let query = { search_index: { $exists: false } }
+  let query = {} // { search_index: { $exists: false } }
   let options = {}
 
   posts
@@ -113,7 +116,7 @@ const indexSearch = () => {
             commentsCount: thread.commentsCount || 0,
           }
 
-          console.log('indexing ', _post.id)
+          console.log('indexing ', _post.id, _post.date_timestamp)
           return await postsIndex
             .saveObject(_post)
             .then(async ({ objectID: search_index }) => {
