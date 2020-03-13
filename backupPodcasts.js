@@ -23,7 +23,7 @@ const backupPodcasts = async () => {
     // },
   }
 
-  const options = { limit: 1 }
+  const options = {}
   const s3Options = { Bucket: BUCKET_NAME }
   const reply = await posts.find(query, options)
   const queue = reply.map(post => {
