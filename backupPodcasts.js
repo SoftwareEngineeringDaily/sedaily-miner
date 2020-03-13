@@ -16,16 +16,26 @@ const s3 = new AWS.S3({
 
 const backupPodcasts = async () => {
   const query = {
-    mp3: { $exists: true }
+    mp3: { $exists: true },
   }
 
-  const options = { sort: { date: 1 } }
+  const options = {
+    sort: { date: 1 },
+    fields: {
+      _id: 1,
+      title: 1,
+      backup: 1,
+      mp3: 1,
+    },
+  }
+
   const s3Options = { Bucket: BUCKET_NAME }
   const reply = await posts.find(query, options)
 
   console.log(`processing ${reply.length} posts`)
   const queue = reply.map((post, index) => {
     return async () => {
+      console.log('post ', post)
       const episodeTitle = post.title.rendered
         .replace(/[^a-zA-Z0-9\s]/ig, '')
         .replace(/\s/ig, '_')
