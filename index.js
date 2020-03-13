@@ -46,9 +46,9 @@ function findAdd(post) {
         return posts.insert(post)
       }
       // Handles previously stored posts
-      else if (postFound && postFound.transcriptUrl && !postFound.transcript) {
+      else if (postFound && postFound.transcriptURL && !postFound.transcript) {
         console.log('setting transcript')
-        let transcript = await parsePdf(postFound.transcriptUrl)
+        let transcript = await parsePdf(postFound.transcriptURL)
         return posts.update(
           { _id: postFound._id },
           { $set: { transcript } }

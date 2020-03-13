@@ -49,7 +49,7 @@ function prepSearchObj(obj) {
     'mp3',
     'thread',
     'filterTags',
-    'transcriptUrl',
+    'transcriptURL',
     'featuredImage',
     'sponsors',
     'objectID',

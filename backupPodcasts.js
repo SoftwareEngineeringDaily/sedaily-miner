@@ -17,7 +17,7 @@ const s3 = new AWS.S3({
 const backupPodcasts = async () => {
   const query = {
     mp3: { $exists: true },
-    transcriptURL: { $exists: true },
+    transcriptURL: { $type: 2 },
     // date: {
     //   $gte: new Date(moment().subtract(1, 'days').toDate()),
     // },
