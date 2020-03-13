@@ -16,23 +16,27 @@ const s3 = new AWS.S3({
 
 const backupPodcasts = async () => {
   const query = {
-    mp3: { $exists: true },
-    transcriptURL: { $type: 2 },
-    // date: {
-    //   $gte: new Date(moment().subtract(1, 'days').toDate()),
-    // },
+    mp3: { $exists: true }
   }
 
-  const options = {}
+  const options = { sort: { date: 1 } }
   const s3Options = { Bucket: BUCKET_NAME }
   const reply = await posts.find(query, options)
-  const queue = reply.map(post => {
-    return async () => {
-      const pathParts = post.transcriptURL.split('/')
-      const fileName = pathParts[pathParts.length - 1]
-        .replace('.pdf', '.mp3')
-        .replace('-', '_')
 
+  console.log(`processing ${reply.length} posts`)
+  const queue = reply.map((post, index) => {
+    return async () => {
+      const episodeTitle = post.title.rendered
+        .replace(/[^a-zA-Z0-9\s]/ig, '')
+        .replace(/\s/ig, '_')
+      const fileName = `${index + 1}_${episodeTitle}.mp3`
+
+      if (post.backup) {
+        console.log(`already backedup: ${fileName}`)
+        return Promise.resolve()
+      }
+
+      console.log(`processing ${fileName}`)
       await new Promise((resolve, reject) => {
         request
           .get(post.mp3)
@@ -55,6 +59,10 @@ const backupPodcasts = async () => {
           console.log(`File uploaded successfully: ${data.Location}`)
 
           await fs.unlinkSync(fileName)
+          await posts.update(
+            { _id: post._id },
+            { $set: { backup: true } }
+          )
 
           resolve()
         });
@@ -62,7 +70,7 @@ const backupPodcasts = async () => {
     }
   })
 
-  return Throttle.all(queue).then(() => {
+  return Throttle.sync(queue).then(() => {
     console.log('Processed all posts')
     db.close()
     process.exit()
