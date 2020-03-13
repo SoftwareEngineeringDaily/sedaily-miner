@@ -14,32 +14,46 @@ const s3 = new AWS.S3({
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 })
 
-const backupPodcasts = async () => {
+const backupPodcasts = async (afterDate, episodeNumber = 0) => {
   const query = {
     mp3: { $exists: true },
   }
 
   const options = {
+    limit: 100,
     sort: { date: 1 },
     fields: {
       _id: 1,
+      date: 1,
       title: 1,
       backup: 1,
       mp3: 1,
     },
   }
 
+  if (afterDate) {
+    query.date = { $gt: afterDate }
+  }
+
   const s3Options = { Bucket: BUCKET_NAME }
   const reply = await posts.find(query, options)
-
   console.log(`processing ${reply.length} posts`)
-  const queue = reply.map((post, index) => {
+
+  if (!reply.length) {
+    console.log('Processed all posts')
+    db.close()
+    return process.exit()
+  }
+
+  const queue = reply.map(post => {
     return async () => {
-      console.log('post ', post)
       const episodeTitle = post.title.rendered
         .replace(/[^a-zA-Z0-9\s]/ig, '')
         .replace(/\s/ig, '_')
-      const fileName = `${index + 1}_${episodeTitle}.mp3`
+      const fileName = `${episodeNumber}_${episodeTitle}.mp3`
+
+      episodeNumber++
+      afterDate = post.date
 
       if (post.backup) {
         console.log(`already backedup: ${fileName}`)
@@ -81,9 +95,7 @@ const backupPodcasts = async () => {
   })
 
   return Throttle.sync(queue).then(() => {
-    console.log('Processed all posts')
-    db.close()
-    process.exit()
+    backupPodcasts(afterDate, episodeNumber)
   })
 }
 
