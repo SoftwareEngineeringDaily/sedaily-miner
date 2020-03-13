@@ -7,18 +7,19 @@ const rp = require('request-promise');
 const async = require('async');
 
 const CONCURRENCY = 5;
-var q = async.queue(function(post, callback) {
+const q = async.queue(function(post, callback) {
   console.log('starting', post.id)
   rp(post._links['wp:featuredmedia'][0].href)
     .then((result) => {
-      let json = JSON.parse(result);
+      const json = JSON.parse(result);
+
       if (!json.guid.rendered) {
         return callback();
       }
 
-      let featuredImage = json.guid.rendered;
+      const featuredImage = json.guid.rendered.replace('http://', 'https://');
       console.log(featuredImage)
-      posts.update({id: post.id}, {
+      posts.update({ id: post.id }, {
         $set: {
           featuredImage,
         },
@@ -38,18 +39,20 @@ q.drain = function() {
 };
 
 let promises = [];
-posts.find({featuredImage: {$exists: false}})
+
+posts
+  .find({
+    $or: [
+      { featuredImage: { $exists: false } },
+      { featuredImage: { $regex: 'http://' } },
+    ]
+  })
   .each((post) => {
-    let urls = getUrls(post.content.rendered);
-    let values = urls.values();
-    let mp3 = '';
-    let mainImage = '';
     if (!post._links['wp:featuredmedia']) {
       console.log('no featuredmedia', post.id)
       return;
-    } else {
-      // console.log("Getting img for post", post.id)
     }
+
     q.push(post, function (err) {
       if (err) {
         console.log(err.message);
