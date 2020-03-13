@@ -14,25 +14,53 @@ const s3 = new AWS.S3({
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 })
 
-const backupPodcasts = async () => {
+const backupPodcasts = async (afterDate, episodeNumber = 0) => {
   const query = {
     mp3: { $exists: true },
-    transcriptURL: { $type: 2 },
-    // date: {
-    //   $gte: new Date(moment().subtract(1, 'days').toDate()),
-    // },
   }
 
-  const options = { limit: 1 }
+  const options = {
+    limit: 100,
+    sort: { date: 1 },
+    fields: {
+      _id: 1,
+      date: 1,
+      title: 1,
+      backup: 1,
+      mp3: 1,
+    },
+  }
+
+  if (afterDate) {
+    query.date = { $gt: afterDate }
+  }
+
   const s3Options = { Bucket: BUCKET_NAME }
   const reply = await posts.find(query, options)
+  console.log(`processing ${reply.length} posts`)
+
+  if (!reply.length) {
+    console.log('Processed all posts')
+    db.close()
+    return process.exit()
+  }
+
   const queue = reply.map(post => {
     return async () => {
-      const pathParts = post.transcriptURL.split('/')
-      const fileName = pathParts[pathParts.length - 1]
-        .replace('.pdf', '.mp3')
-        .replace('-', '_')
+      const episodeTitle = post.title.rendered
+        .replace(/[^a-zA-Z0-9\s]/ig, '')
+        .replace(/\s/ig, '_')
+      const fileName = `${episodeNumber}_${episodeTitle}.mp3`
 
+      episodeNumber++
+      afterDate = post.date
+
+      if (post.backup) {
+        console.log(`already backedup: ${fileName}`)
+        return Promise.resolve()
+      }
+
+      console.log(`processing ${fileName}`)
       await new Promise((resolve, reject) => {
         request
           .get(post.mp3)
@@ -55,6 +83,10 @@ const backupPodcasts = async () => {
           console.log(`File uploaded successfully: ${data.Location}`)
 
           await fs.unlinkSync(fileName)
+          await posts.update(
+            { _id: post._id },
+            { $set: { backup: true } }
+          )
 
           resolve()
         });
@@ -62,10 +94,8 @@ const backupPodcasts = async () => {
     }
   })
 
-  return Throttle.all(queue).then(() => {
-    console.log('Processed all posts')
-    db.close()
-    process.exit()
+  return Throttle.sync(queue).then(() => {
+    backupPodcasts(afterDate, episodeNumber)
   })
 }
 
