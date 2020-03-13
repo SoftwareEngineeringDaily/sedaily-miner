@@ -64,7 +64,7 @@ function getPosts(page) {
   query.page = page;
   wpQueryString = querystring.stringify(query);
 
-  return rp(`http://softwareengineeringdaily.com/wp-json/wp/v2/posts?${wpQueryString}`)
+  return rp(`https://softwareengineeringdaily.com/wp-json/wp/v2/posts?${wpQueryString}`)
     .then(function (response) {
       let promises = [];
       let postsResponse = JSON.parse(response);
