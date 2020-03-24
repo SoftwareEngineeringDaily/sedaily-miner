@@ -95,17 +95,29 @@ async function readlines(buffer, xwidth) {
 }
 
 async function index(url) {
+  const INVALID_STRINGS = [
+    '[INTRODUCTION]',
+    '[SPONSOR MESSAGE]',
+    '[INTERVIEW]',
+    '[INTERVIEW CONTINUED]',
+    '[INTERVIEW CONTINUED ]',
+    '[END OF INTERVIEW]'
+  ]
+
   let buffer = await bufferize(url)
   let lines = await readlines(buffer, 1)
   let transcriptHtml = ''
   let isEnd = false
 
   lines = await JSON.parse(JSON.stringify(lines))
-  lines.forEach(page => {
-    flatten(page).forEach(p => {
-      let regExpStrong = /\[[0-9]+?:[0-9]+?:[0-9]+?.+:/g
-      let isValid = (
+  lines.forEach(_page => {
+    const page = flatten(_page)
+    page.forEach((p, i) => {
+      const regExpStrong = /\[[0-9]+?:[0-9]+?:[0-9]+?.+:/g
+      const isValid = (
         p !== 'Transcript' &&
+        INVALID_STRINGS.indexOf(p) < 0 &&
+        [ '[SPONSOR MESSAGE]' ].indexOf(page[i - 1]) < 0 &&
         p.search(/([A-Z])\w+\s[0-9]/g) < 0 &&
         p.search(/\\[a-z]\d+/g) < 0
       )
@@ -116,16 +128,9 @@ async function index(url) {
         return `</p><p><strong>${txt}</strong>`
       })
 
-      if (p.trim() === '[INTRODUCTION]') {
-        p = `<p>${p.trim()}`
-      }
-
-      if ([ '[SPONSOR MESSAGE]', '[INTERVIEW]', '[INTERVIEW CONTINUED]', '[END OF INTERVIEW]' ].indexOf(p) >= 0) {
-        p = `</p><p>${p.trim()}`
-      }
-
       if (isValid && !isEnd) {
-        transcriptHtml += p
+        // Append with some last minute cleanup
+        transcriptHtml += p.replace(/\[SPONSOR MESSAGE\]/ig, '')
       }
     })
   })

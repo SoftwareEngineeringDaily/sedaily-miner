@@ -1,5 +1,7 @@
 require('dotenv').config()
 
+const ora = require('ora')
+const cliSpinners = require('cli-spinners')
 const Throttle = require('promise-parallel-throttle')
 const db = require('monk')(process.env.MONGO_DB)
 const posts = db.get('posts')
@@ -11,27 +13,33 @@ const getTranscript = async () => {
     transcriptURL: { $regex: 'softwareengineeringdaily.com' },
     $or: [
       { transcript: { $exists: false } },
-      { transcript: { $regex: '© 2020 Software Engineering Daily' } },
+      { transcript: { $regex: '[SPONSOR MESSAGE]' } },
     ],
   }
 
   const reply = await posts.find(query, options)
   const queue = reply.map(post => {
     return async () => {
+      const spinner = ora({
+        text: `Parsing ${post.transcriptURL}`,
+        spinner: cliSpinners.bouncingBar,
+      })
+
       try {
+        spinner.start()
         const transcript = await parsePdf(post.transcriptURL)
-        console.log(`[SUCCESS]: ${post.id} ${post.title.rendered} - ${post.transcriptURL} `, !!(transcript))
         await posts.update({ id: post.id }, { $set: { transcript } })
+        spinner.succeed(`[SUCCESS]: ${post.id} ${post.title.rendered} - ${post.transcriptURL}`)
       }
       catch (err) {
-        console.error(`ERROR: ${post.title.rendered} ${transcriptURL}: `, err)
+        spinner.fail(`ERROR: ${post.title.rendered} ${transcriptURL}: `, err)
       }
 
       return Promise.resolve()
     }
   })
 
-  Throttle.all(queue).then(() => {
+  Throttle.sync(queue).then(() => {
     console.log('Processed all transcripts')
     db.close()
     process.exit()
