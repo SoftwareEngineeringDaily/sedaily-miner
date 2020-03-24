@@ -1,6 +1,8 @@
 require('dotenv').config()
 
 const AWS = require('aws-sdk')
+const ora = require('ora')
+const cliSpinners = require('cli-spinners')
 const db = require('monk')(process.env.MONGO_DB)
 const Throttle = require('promise-parallel-throttle')
 const request = require('request')
@@ -51,22 +53,29 @@ const backupPodcasts = async (afterDate, episodeNumber = 0) => {
         .replace(/[^a-zA-Z0-9\s]/ig, '')
         .replace(/\s/ig, '_')
       const fileName = `${episodeNumber}_${episodeTitle}.mp3`
+      const spinner = ora({
+        text: `Downloading: ${fileName}`,
+        spinner: cliSpinners.bouncingBar,
+      })
 
       episodeNumber++
       afterDate = post.date
 
       if (post.backup) {
-        console.log(`already backedup: ${fileName}`)
+        spinner.succeed(`Backed Up: ${fileName}`)
         return Promise.resolve()
       }
 
-      console.log(`processing ${fileName}`)
       await new Promise((resolve, reject) => {
         request
           .get(post.mp3)
-          .on('error', (err) => console.error('err ', err))
+          .on('response', () => spinner.start())
+          .on('error', (err) => spinner.fail(err))
           .pipe(fs.createWriteStream(fileName))
-          .on('close', resolve)
+          .on('close', () => {
+            spinner.succeed()
+            resolve()
+          })
       })
 
       const fileContent = await fs.readFileSync(fileName)
@@ -75,12 +84,18 @@ const backupPodcasts = async (afterDate, episodeNumber = 0) => {
       s3Options.Body = fileContent
 
       return await new Promise((resolve, reject) => {
+        const spinnerUpload = ora({
+          text: `Uploading: ${s3Options.Key}`,
+          spinner: cliSpinners.bouncingBar,
+        })
+
         s3.upload(s3Options, async (err, data) => {
           if (err) {
+            spinnerUpload.fail(err)
             throw err
           }
 
-          console.log(`File uploaded successfully: ${data.Location}`)
+          spinnerUpload.succeed(`File uploaded successfully: ${data.Location}`)
 
           await fs.unlinkSync(fileName)
           await posts.update(
