@@ -10,10 +10,10 @@ const parsePdf = require('./parsePdf')
 const getTranscript = async () => {
   const options = {}
   const query = {
-    transcriptURL: { $regex: 'softwareengineeringdaily.com' },
+    transcriptUrl: { $regex: 'softwareengineeringdaily.com' },
     $or: [
       { transcript: { $exists: false } },
-      { transcript: { $regex: '[SPONSOR MESSAGE]' } },
+      { transcript: { $regex: /\[SPONSOR MESSAGE\]/ig } },
     ],
   }
 
@@ -21,18 +21,18 @@ const getTranscript = async () => {
   const queue = reply.map(post => {
     return async () => {
       const spinner = ora({
-        text: `Parsing ${post.transcriptURL}`,
+        text: `Parsing ${post.transcriptUrl}`,
         spinner: cliSpinners.bouncingBar,
       })
 
       try {
         spinner.start()
-        const transcript = await parsePdf(post.transcriptURL)
+        const transcript = await parsePdf(post.transcriptUrl)
         await posts.update({ id: post.id }, { $set: { transcript } })
-        spinner.succeed(`[SUCCESS]: ${post.id} ${post.title.rendered} - ${post.transcriptURL}`)
+        spinner.succeed(`[SUCCESS]: ${post.id} ${post.title.rendered} - ${post.transcriptUrl}`)
       }
       catch (err) {
-        spinner.fail(`ERROR: ${post.title.rendered} ${transcriptURL}: `, err)
+        spinner.fail(`ERROR: ${post.title.rendered} ${transcriptUrl}: `, err)
       }
 
       return Promise.resolve()

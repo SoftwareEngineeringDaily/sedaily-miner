@@ -107,36 +107,51 @@ async function index(url) {
   let buffer = await bufferize(url)
   let lines = await readlines(buffer, 1)
   let transcriptHtml = ''
+  let isSponsor = false
   let isEnd = false
 
   lines = await JSON.parse(JSON.stringify(lines))
   lines.forEach(_page => {
     const page = flatten(_page)
     page.forEach((p, i) => {
+      if (p.search(/\[SPONSOR MESSAGE\]/ig) >= 0) {
+        isSponsor = true
+      }
+
+      if (isSponsor && p.search(/\[INTERVIEW/ig) >= 0) {
+        isSponsor = false
+      }
+
       const regExpStrong = /\[[0-9]+?:[0-9]+?:[0-9]+?.+:/g
       const isValid = (
+        p &&
+        !isSponsor &&
         p !== 'Transcript' &&
         INVALID_STRINGS.indexOf(p) < 0 &&
-        [ '[SPONSOR MESSAGE]' ].indexOf(page[i - 1]) < 0 &&
         p.search(/([A-Z])\w+\s[0-9]/g) < 0 &&
         p.search(/\\[a-z]\d+/g) < 0
       )
 
       isEnd = (p.trim() === '[END]' || isEnd)
 
+      // Handle speaker title
       p = p.replace(regExpStrong, txt => {
         return `</p><p><strong>${txt}</strong>`
       })
 
       if (isValid && !isEnd) {
-        // Append with some last minute cleanup
-        transcriptHtml += p.replace(/\[SPONSOR MESSAGE\]/ig, '')
+        transcriptHtml += p
       }
     })
   })
 
   // Removes page footers
   transcriptHtml = transcriptHtml.replace(/©\s20(\d+) Software Engineering Daily\0?\d+/g, '')
+
+  // Separate paragraphs
+  transcriptHtml = transcriptHtml.replace(/.\.[a-zA-Z]/g, txt => {
+    return txt.replace(/\./, '.</p><p>')
+  })
 
   // Closes transcript HTML
   transcriptHtml += `${transcriptHtml}</p><br />`
