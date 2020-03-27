@@ -11,6 +11,7 @@ const getTranscript = async () => {
   const options = {}
   const query = {
     transcriptUrl: { $regex: 'softwareengineeringdaily.com' },
+    transcriptURL: { $regex: 'softwareengineeringdaily.com' },
     $or: [
       { transcript: { $exists: false } },
       { transcript: { $regex: /\[SPONSOR MESSAGE\]/ig } },
