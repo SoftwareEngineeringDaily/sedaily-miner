@@ -21,18 +21,18 @@ const getTranscript = async () => {
   const queue = reply.map(post => {
     return async () => {
       const spinner = ora({
-        text: `Parsing ${post.transcriptUrl}`,
+        text: `Parsing ${post.transcriptURL}`,
         spinner: cliSpinners.bouncingBar,
       })
 
       try {
         spinner.start()
-        const transcript = await parsePdf(post.transcriptUrl)
+        const transcript = await parsePdf(post.transcriptURL)
         await posts.update({ id: post.id }, { $set: { transcript } })
-        spinner.succeed(`[SUCCESS]: ${post.id} ${post.title.rendered} - ${post.transcriptUrl}`)
+        spinner.succeed(`[SUCCESS]: ${post.id} ${post.title.rendered} - ${post.transcriptURL}`)
       }
       catch (err) {
-        spinner.fail(`ERROR: ${post.title.rendered} ${transcriptUrl}: `, err)
+        spinner.fail(`ERROR: ${post.title.rendered} ${transcriptURL}: `, err)
       }
 
       return Promise.resolve()
