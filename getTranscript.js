@@ -14,6 +14,7 @@ const getTranscript = async () => {
     $or: [
       { transcript: { $exists: false } },
       { transcript: { $regex: /\[SPONSOR MESSAGE\]/ig } },
+      { transcript: { $regex: '.</p><p>com' } }
     ],
   }
 
