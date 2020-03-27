@@ -148,10 +148,11 @@ async function index(url) {
   // Removes page footers
   transcriptHtml = transcriptHtml.replace(/©\s20(\d+) Software Engineering Daily\0?\d+/g, '')
 
+  // TODO: Doesn't quite work yet. Incorrectly parses urls
   // Separate paragraphs
-  transcriptHtml = transcriptHtml.replace(/.\.[a-zA-Z]/g, txt => {
-    return txt.replace(/\./, '.</p><p>')
-  })
+  // transcriptHtml = transcriptHtml.replace(/.\.[a-zA-Z]/g, txt => {
+  //   return txt.replace(/\./, '.</p><p>')
+  // })
 
   // Closes transcript HTML
   transcriptHtml += `${transcriptHtml}</p><br />`
