@@ -32,3 +32,5 @@ echo 'Cleaning content'
 node cleanContent.js
 echo 'Indexing posts for search'
 node indexSearch.js
+echo 'Getting related tweet for episodes'
+node getTaggedTwitter.js
