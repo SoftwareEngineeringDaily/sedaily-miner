@@ -38,6 +38,7 @@
     "request": "^2.87.0",
     "request-promise": "^4.2.0",
     "striptags": "^3.1.1",
+    "twitter": "^1.7.1",
     "valid-url": "^1.0.9",
     "wpapi": "^1.0.3"
   }
