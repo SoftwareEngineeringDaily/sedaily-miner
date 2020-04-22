@@ -130,7 +130,11 @@ createTopics()
 
 async function addTopicsToDB() {
   for (let k = 0; k<newTopics.length; k++) {
-    await topics.insert(newTopics[k])
+    try {
+     await topics.insert(newTopics[k])
+    } catch (e) {
+      console.error(e)
+    }
   }
   console.log("   Done!")
 }
