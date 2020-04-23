@@ -22,7 +22,7 @@ function createTopics() {
           try {
             const tagName = tag.name;
 
-            let promise = topics.findOne({ name: tagName })
+            let promise = topics.findOne({ $or: [{ name: tagName }, { slug: tag.slug }] })
             .then((existingTopic) => {
 
               if (!existingTopic) {
@@ -88,7 +88,7 @@ async function addTopicsToPosts() {
 
         const tagName = tag.name;
 
-        let existingTopic = await topics.findOne({ name: tagName })
+        let existingTopic = await topics.findOne({ $or: [{ name: tagName }, { slug: tag.slug }] })
           console.log(`   Adding topic to the post ${i2}/${i}: ${tagName}`)
           await posts.update({ _id: post._id },
             {
