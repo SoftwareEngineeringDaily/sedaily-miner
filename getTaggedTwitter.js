@@ -38,8 +38,6 @@ function handleTweet(tweet, next) {
     posts.findOne({ 'title.rendered': new RegExp(searchPostStr, 'i') })
       .then((post) => {
         if (!post) {
-          console.log('\nPost not found:')
-          console.log(`\n${searchPostStr}\n`)
           return next()
         }
         if (post.relatedTweet) return next()
