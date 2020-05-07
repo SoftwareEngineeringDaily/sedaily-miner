@@ -17,12 +17,24 @@ const DomParser = require('dom-parser')
 
 const parser = new DomParser()
 const SET_NULL_AFTER_DAYS = 30 // The number of days after script sets transcript URL to null if not set yet
+const DEFAULT_AVATAR = 'https://secure.gravatar.com/avatar/5c28ba545d5b8d7e065fc31454aeffa7'
 
 let promises = []
 let postsCount = 0
 
 posts
-  .find({ author: { $type: 16 } })
+  .find({
+    $or: [
+      { author: { $type: 16 } },
+      {
+        'author.name': 'SE Daily',
+        'author.image': {
+          $regex: '^((?!5c28ba545d5b8d7e065fc31454aeffa7).)*$',
+          $options: 'i'
+        },
+      },
+    ]
+  })
   .each((post) => {
     postsCount++
 
@@ -33,7 +45,7 @@ posts
       let images = dom.getElementsByTagName('img')
       let name = ''
       let url = ''
-      let image = ''
+      let image = DEFAULT_AVATAR
 
       for (let i = 0; i < links.length; i++) {
         if (links[i].getAttribute('rel') === 'author') {
@@ -43,9 +55,11 @@ posts
         }
       }
 
-      for (let i = 0; i < images.length; i++) {
-        if ((images[i].getAttribute('src') || '').search('https://secure.gravatar.com/avatar/') >= 0) {
-          image = (images[i].getAttribute('src') || '').trim()
+      if (name !== 'SE Daily') {
+        for (let i = 0; i < images.length; i++) {
+          if ((images[i].getAttribute('src') || '').search('https://secure.gravatar.com/avatar/') >= 0) {
+            image = (images[i].getAttribute('src') || '').trim()
+          }
         }
       }
 
@@ -57,7 +71,7 @@ posts
     })
     .catch((error) => {
       if (error.statusCode !== 429 && error.statusCode !== 504) {
-        console.log('Error', error)
+        console.log('Error', post.link, error.response.statusMessage)
       }
     })
 
