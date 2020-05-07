@@ -1,9 +1,12 @@
 require('dotenv').config()
 
+const Entities = require('html-entities').AllHtmlEntities
 const Parser = require('node-html-parser')
 const Throttle = require('promise-parallel-throttle')
 const db = require('monk')(process.env.MONGO_DB)
 const posts = db.get('posts')
+
+const entities = new Entities()
 
 const getContent = async () => {
   const options = {}
@@ -45,6 +48,10 @@ const getContent = async () => {
         }
       })
 
+      const title = {
+        rendered: entities.decode(post.title.rendered)
+      }
+
       const cleanedContent = elements
         .map(el => el && el.toString())
         .filter(el => !!(el))
@@ -52,7 +59,7 @@ const getContent = async () => {
 
       try {
         console.log(`[SUCCESS]: ${post.id}: ${post.title.rendered}`)
-        await posts.update({ id: post.id }, { $set: { cleanedContent } })
+        await posts.update({ id: post.id }, { $set: { title, cleanedContent } })
       }
       catch (err) {
         console.error(`ERROR: ${post.id}: ${post.title.rendered}: `, err)
