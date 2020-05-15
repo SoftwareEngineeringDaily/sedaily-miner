@@ -2,6 +2,7 @@ require('dotenv').config()
 
 const db = require('monk')(process.env.MONGO_DB)
 const http = require('http')
+const https = require('https')
 const posts = db.get('posts')
 const getMP3Duration = require('get-mp3-duration')
 const getUrls = require('get-urls')
@@ -38,7 +39,9 @@ const getMp3Buffer = (mp3) => {
     //   })
     // })
 
-    http.get(mp3, (res) => {
+    const Module = /https\:\/\//.test(mp3) ? https : http
+
+    Module.get(mp3, (res) => {
       const chunks = []
 
       res.on('data', chunk => {
@@ -65,7 +68,10 @@ var q = async.queue(function(post, callback) {
     for (let url of values) {
       let extension = url.substr(url.length - 4);
 
-      if (extension === '.mp3' && url.indexOf('libsyn.com/sedaily') >= 0) {
+      if (
+        extension === '.mp3' && 
+        (url.indexOf('libsyn.com/sedaily') >= 0 || url.indexOf('libsyn.com/secure/sedaily') >= 0)
+        ) {
         mp3 = url;
         break;
       }
