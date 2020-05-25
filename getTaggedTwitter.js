@@ -17,7 +17,7 @@ const query = {
   include_rts: false,
   exclude_replies: true
 }
-
+let ct = 1;
 function handleTweet(tweet, next) {
   if (!tweet.entities.user_mentions.length) return next()
 
@@ -32,7 +32,7 @@ function handleTweet(tweet, next) {
     // We've had a few different tweets during this time
     // Here there are approaches to filter as much as possible and exclude some options
     let searchPostStr = match[1].replace('[podcast] ', '')
-      .slice(0, 30) // some error margin for this post search
+      // .slice(0, 30) // some error margin for this post search
       .replace(/[\(\)\*\\\/\^\~\[\]\{\}]/g, '.')
     
     posts.findOne({ 'title.rendered': new RegExp(searchPostStr, 'i') })
@@ -40,7 +40,7 @@ function handleTweet(tweet, next) {
         if (!post) {
           return next()
         }
-        if (post.relatedTweet) return next()
+        // if (post.relatedTweet) return next()
 
         const update = {
           relatedTweet: tweet.id_str,
@@ -54,7 +54,7 @@ function handleTweet(tweet, next) {
           $set: update,
         })
         .then(() => {
-          console.log(`Updated: [${post.id}] ${post.title.rendered}`)
+          console.log(`Updated:(${ct++}) [${post.id}] ${post.title.rendered}`)
           next()
         })
         .catch((error) => {
