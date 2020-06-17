@@ -35,6 +35,7 @@ function createTopics() {
                     name: tagName,
                     slug: tag.slug,
                     postCount: 1,
+                    maintainers: [],
                     status: 'active'
                   })
                 }
