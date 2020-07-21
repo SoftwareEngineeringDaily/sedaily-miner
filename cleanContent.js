@@ -24,7 +24,19 @@ const getContent = async () => {
       const elements = parsed.querySelectorAll('*')
       const toRemove = []
 
+      let description = ""
+
       elements.forEach((el, i) => {
+        // Create a clean podcast description
+        if (
+          el.tagName === 'p' &&
+          el.text.trim() &&
+          !el.text.match('Podcast: Play in new window | Download') &&
+          !el.text.match('Sponsorship inquiries')
+        ) {
+          description += el.toString();
+        }
+
         // Remove sponsorship inquiries
         if (el && el.text.toLowerCase().indexOf('sponsorship inquiries:') >= 0) {
           elements[i] = null
@@ -59,7 +71,7 @@ const getContent = async () => {
 
       try {
         console.log(`[SUCCESS]: ${post.id}: ${post.title.rendered}`)
-        await posts.update({ id: post.id }, { $set: { title, cleanedContent } })
+        await posts.update({ id: post.id }, { $set: { title, cleanedContent, description } })
       }
       catch (err) {
         console.error(`ERROR: ${post.id}: ${post.title.rendered}: `, err)
