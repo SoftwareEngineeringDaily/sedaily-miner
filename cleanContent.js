@@ -9,7 +9,16 @@ const posts = db.get('posts')
 const entities = new Entities()
 
 const getContent = async () => {
-  const options = {}
+  const options = {
+    fields: {
+      id: 1,
+      title: 1,
+      content: 1,
+      cleanedContent: 1,
+      description: 1,
+    }
+  }
+
   const query = {
     $or: [
       { content: { $exists: true } },
