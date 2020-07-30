@@ -19,6 +19,10 @@ const s3 = new AWS.S3({
 const backupPodcasts = async (afterDate, episodeNumber = 0) => {
   const query = {
     mp3: { $exists: true },
+    $or: [
+      { backup: false },
+      { backup: { $exists: false } },
+    ]
   }
 
   const options = {
