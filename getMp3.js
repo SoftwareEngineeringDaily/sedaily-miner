@@ -53,7 +53,8 @@ const queue = async.queue(function(post, callback) {
       let isValidUrl = (
         url.indexOf('libsyn.com/sedaily') >= 0 ||
         url.indexOf('libsyn.com/secure/sedaily') >= 0 ||
-        url.indexOf('sd-profile-pictures.s3-us-west-2.amazonaws.com/adfree') >= 0
+        url.indexOf('sd-profile-pictures.s3-us-west-2.amazonaws.com/adfree') >= 0 ||
+        url.indexOf('traffic.megaphone.fm') >= 0
       );
 
       if (isMp3 && isValidUrl) {
