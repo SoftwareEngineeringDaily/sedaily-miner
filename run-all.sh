@@ -6,6 +6,8 @@ echo 'Getting images'
 node getImg.js
 echo 'Getting mp3s'
 node getMp3.js
+echo 'Update mp3 to megaphone.fm'
+node migrateLibsynToMegaphone.js
 echo 'Generating clean description'
 node generateCleanDescription.js
 node makeThreadForEpisodes.js
