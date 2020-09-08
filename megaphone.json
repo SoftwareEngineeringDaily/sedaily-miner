@@ -1,6 +1,78 @@
 [
   {
     "Podcasts Title": "Software Daily",
+    "Episodes Title": "Robotic Process Automation with Antti Karjalainen",
+    "Podcasts ID": "e60108fe-e328-11ea-b2b6-1348249f900a",
+    "Episodes Pubdate Date": "2020-09-04",
+    "Episodes Embeddable Code (dark themed)": "<iframe frameborder=\"0\" height=\"200\" scrolling=\"no\" src=\"https://playlist.megaphone.fm?e=SED8189708062&light=false\" width=\"100%\"></iframe>",
+    "Episodes Embeddable Code (light themed)": "<iframe frameborder=\"0\" height=\"200\" scrolling=\"no\" src=\"https://playlist.megaphone.fm?e=SED8189708062&light=true\" width=\"100%\"></iframe>",
+    "Episodes Original URL": ""
+  },
+  {
+    "Podcasts Title": "Software Daily",
+    "Episodes Title": "Modern Venture with Jerry Chen",
+    "Podcasts ID": "e60108fe-e328-11ea-b2b6-1348249f900a",
+    "Episodes Pubdate Date": "2020-09-03",
+    "Episodes Embeddable Code (dark themed)": "<iframe frameborder=\"0\" height=\"200\" scrolling=\"no\" src=\"https://playlist.megaphone.fm?e=SED8033850464&light=false\" width=\"100%\"></iframe>",
+    "Episodes Embeddable Code (light themed)": "<iframe frameborder=\"0\" height=\"200\" scrolling=\"no\" src=\"https://playlist.megaphone.fm?e=SED8033850464&light=true\" width=\"100%\"></iframe>",
+    "Episodes Original URL": ""
+  },
+  {
+    "Podcasts Title": "Software Daily",
+    "Episodes Title": "API Change Management with Aidan Cunniffe",
+    "Podcasts ID": "e60108fe-e328-11ea-b2b6-1348249f900a",
+    "Episodes Pubdate Date": "2020-09-02",
+    "Episodes Embeddable Code (dark themed)": "<iframe frameborder=\"0\" height=\"200\" scrolling=\"no\" src=\"https://playlist.megaphone.fm?e=SED5241632642&light=false\" width=\"100%\"></iframe>",
+    "Episodes Embeddable Code (light themed)": "<iframe frameborder=\"0\" height=\"200\" scrolling=\"no\" src=\"https://playlist.megaphone.fm?e=SED5241632642&light=true\" width=\"100%\"></iframe>",
+    "Episodes Original URL": ""
+  },
+  {
+    "Podcasts Title": "Software Daily",
+    "Episodes Title": "WebAssembly Migration with Nicolo Davis",
+    "Podcasts ID": "e60108fe-e328-11ea-b2b6-1348249f900a",
+    "Episodes Pubdate Date": "2020-09-01",
+    "Episodes Embeddable Code (dark themed)": "<iframe frameborder=\"0\" height=\"200\" scrolling=\"no\" src=\"https://playlist.megaphone.fm?e=SED7926052946&light=false\" width=\"100%\"></iframe>",
+    "Episodes Embeddable Code (light themed)": "<iframe frameborder=\"0\" height=\"200\" scrolling=\"no\" src=\"https://playlist.megaphone.fm?e=SED7926052946&light=true\" width=\"100%\"></iframe>",
+    "Episodes Original URL": ""
+  },
+  {
+    "Podcasts Title": "Software Daily",
+    "Episodes Title": "Noteable: Jupyter Notebook Platform with Matt Seal",
+    "Podcasts ID": "e60108fe-e328-11ea-b2b6-1348249f900a",
+    "Episodes Pubdate Date": "2020-08-31",
+    "Episodes Embeddable Code (dark themed)": "<iframe frameborder=\"0\" height=\"200\" scrolling=\"no\" src=\"https://playlist.megaphone.fm?e=SED1541180333&light=false\" width=\"100%\"></iframe>",
+    "Episodes Embeddable Code (light themed)": "<iframe frameborder=\"0\" height=\"200\" scrolling=\"no\" src=\"https://playlist.megaphone.fm?e=SED1541180333&light=true\" width=\"100%\"></iframe>",
+    "Episodes Original URL": ""
+  },
+  {
+    "Podcasts Title": "Software Daily",
+    "Episodes Title": "Hyperparameter Tuning with Richard Liaw",
+    "Podcasts ID": "e60108fe-e328-11ea-b2b6-1348249f900a",
+    "Episodes Pubdate Date": "2020-08-28",
+    "Episodes Embeddable Code (dark themed)": "<iframe frameborder=\"0\" height=\"200\" scrolling=\"no\" src=\"https://playlist.megaphone.fm?e=SED4672185690&light=false\" width=\"100%\"></iframe>",
+    "Episodes Embeddable Code (light themed)": "<iframe frameborder=\"0\" height=\"200\" scrolling=\"no\" src=\"https://playlist.megaphone.fm?e=SED4672185690&light=true\" width=\"100%\"></iframe>",
+    "Episodes Original URL": "https://traffic.libsyn.com/secure/sedaily/2020_08_28_TuneHyperparameterTuning.mp3"
+  },
+  {
+    "Podcasts Title": "Software Daily",
+    "Episodes Title": "Anduril Engineering with Gokul Subramanian",
+    "Podcasts ID": "e60108fe-e328-11ea-b2b6-1348249f900a",
+    "Episodes Pubdate Date": "2020-08-27",
+    "Episodes Embeddable Code (dark themed)": "<iframe frameborder=\"0\" height=\"200\" scrolling=\"no\" src=\"https://playlist.megaphone.fm?e=SED1718128074&light=false\" width=\"100%\"></iframe>",
+    "Episodes Embeddable Code (light themed)": "<iframe frameborder=\"0\" height=\"200\" scrolling=\"no\" src=\"https://playlist.megaphone.fm?e=SED1718128074&light=true\" width=\"100%\"></iframe>",
+    "Episodes Original URL": "https://traffic.libsyn.com/secure/sedaily/2020_08_27_Anduril.mp3"
+  },
+  {
+    "Podcasts Title": "Software Daily",
+    "Episodes Title": "Machine Learning Labeling and Tooling with Lukas Biewald",
+    "Podcasts ID": "e60108fe-e328-11ea-b2b6-1348249f900a",
+    "Episodes Pubdate Date": "2020-08-26",
+    "Episodes Embeddable Code (dark themed)": "<iframe frameborder=\"0\" height=\"200\" scrolling=\"no\" src=\"https://playlist.megaphone.fm?e=SED9735737781&light=false\" width=\"100%\"></iframe>",
+    "Episodes Embeddable Code (light themed)": "<iframe frameborder=\"0\" height=\"200\" scrolling=\"no\" src=\"https://playlist.megaphone.fm?e=SED9735737781&light=true\" width=\"100%\"></iframe>",
+    "Episodes Original URL": "https://traffic.libsyn.com/secure/sedaily/2020_08_26_Wandb.mp3"
+  },
+  {
+    "Podcasts Title": "Software Daily",
     "Episodes Title": "Software and the Law with Mark Radcliffe",
     "Podcasts ID": "e60108fe-e328-11ea-b2b6-1348249f900a",
     "Episodes Pubdate Date": "2020-08-25",
