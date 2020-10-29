@@ -4,3 +4,4 @@ node_modules/
 .env.example1
 .env-prod
 .env-stag
+megaphone.json
