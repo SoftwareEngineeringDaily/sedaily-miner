@@ -6,8 +6,6 @@ echo 'Getting images'
 node getImg.js
 echo 'Getting mp3s'
 node getMp3.js
-echo 'Update mp3 to megaphone.fm'
-node migrateLibsynToMegaphone.js
 echo 'Generating clean description'
 node generateCleanDescription.js
 node makeThreadForEpisodes.js
@@ -36,3 +34,5 @@ echo 'Indexing posts for search'
 node indexSearch.js
 echo 'Getting related tweet for episodes'
 node getTaggedTwitter.js
+echo 'Getting Ad Free MP3s'
+node updateMegaphoneAdFree.js
