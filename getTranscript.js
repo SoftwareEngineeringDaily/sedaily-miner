@@ -5,7 +5,7 @@ const cliSpinners = require('cli-spinners')
 const Throttle = require('promise-parallel-throttle')
 const db = require('monk')(process.env.MONGO_DB)
 const posts = db.get('posts')
-const parsePdf = require('./parsePdf')
+const parsePdf2 = require('./parsePdf2')
 
 const getTranscript = async () => {
   const options = {}
@@ -28,7 +28,7 @@ const getTranscript = async () => {
 
       try {
         spinner.start()
-        const transcript = await parsePdf(post.transcriptURL)
+        const transcript = await parsePdf2(post.transcriptURL)
         await posts.update({ id: post.id }, { $set: { transcript } })
         spinner.succeed(`[SUCCESS]: ${post.id} ${post.title.rendered} - ${post.transcriptURL}`)
       }
