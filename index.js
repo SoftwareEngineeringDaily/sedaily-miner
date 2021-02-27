@@ -11,7 +11,7 @@ const posts = db.get('posts')
 const tags = db.get('tags')
 const moment = require('moment')
 const striptags = require('striptags')
-const parsePdf = require('./parsePdf')
+const parsePdf2 = require('./parsePdf2')
 
 // @TODO: can we query by modified date? https://github.com/WP-API/WP-API/issues/472
 // let query = {
@@ -48,7 +48,7 @@ function findAdd(post) {
       // Handles previously stored posts
       else if (postFound && postFound.transcriptURL && !postFound.transcript) {
         console.log('setting transcript')
-        let transcript = await parsePdf(postFound.transcriptURL)
+        let transcript = await parsePdf2(postFound.transcriptURL)
         return posts.update(
           { _id: postFound._id },
           { $set: { transcript } }

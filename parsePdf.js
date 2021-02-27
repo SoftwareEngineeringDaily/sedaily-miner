@@ -105,7 +105,7 @@ async function index(url) {
   ]
 
   let buffer = await bufferize(url)
-  let lines = await readlines(buffer, 1)
+  let lines = await readlines(buffer,1)
   let transcriptHtml = ''
   let isSponsor = false
   let isEnd = false

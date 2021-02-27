@@ -12,7 +12,6 @@ const Bluebird = require('bluebird')
 const getUrls = require('get-urls')
 const rp = require('request-promise')
 const moment = require('moment')
-const parsePdf = require('./parsePdf')
 const DomParser = require('dom-parser')
 
 const parser = new DomParser()
