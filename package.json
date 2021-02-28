@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "git push heroku master:master"
+    "deploy": "git push heroku master:master",
+    "start": "node getTranscript.js"
   },
   "keywords": [],
   "author": "",
