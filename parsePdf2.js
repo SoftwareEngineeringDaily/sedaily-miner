@@ -22,13 +22,13 @@ async function parsePdf(buffer){
         '[END OF INTERVIEW]'
       ]
     const regExpStrong = /\[[0-9]+?:[0-9]+?:[0-9]+?.+:/g
-    let pdfParser = new PDFParser(this,1);
     let transcriptHtml = ''
 
     return new Promise((resoive, reject) => {
-        pdfParser.parseBuffer(buffer);
+        let pdfParser = new PDFParser(this,1);
         pdfParser.on("pdfParser_dataError", errData => {
-            resolve('<p></p>')
+          console.log(errData.parserError)
+          resolve('<p></p>')
         });
         pdfParser.on("pdfParser_dataReady", pdfData => {
             arrayOfLines = pdfParser.getRawTextContent().match(/[^\n]+/g);
@@ -74,6 +74,7 @@ async function parsePdf(buffer){
             transcriptHtml = `<p>${transcriptHtml}</p>`;
             resoive(transcriptHtml);
         });
+        pdfParser.parseBuffer(buffer);
     })
 }
 
