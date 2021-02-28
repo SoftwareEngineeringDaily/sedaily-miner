@@ -28,7 +28,7 @@ async function parsePdf(buffer){
         let pdfParser = new PDFParser(this,1);
         pdfParser.on("pdfParser_dataError", errData => {
           console.log(errData.parserError)
-          resolve('<p></p>')
+          reject(new Error('Error parsing file'))
         });
         pdfParser.on("pdfParser_dataReady", pdfData => {
             arrayOfLines = pdfParser.getRawTextContent().match(/[^\n]+/g);
@@ -75,6 +75,9 @@ async function parsePdf(buffer){
             resoive(transcriptHtml);
         });
         pdfParser.parseBuffer(buffer);
+    })
+    .catch(error => {
+      console.log(error);
     })
 }
 
