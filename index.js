@@ -1,16 +1,11 @@
 require('dotenv').config()
 
-const keys = require('lodash/keys')
-const isArray = require('lodash/isArray')
 const db = require('monk')(process.env.MONGO_DB)
 const rp = require('request-promise')
 const querystring = require('querystring')
 const Throttle = require('promise-parallel-throttle')
-const fs = require('fs')
 const posts = db.get('posts')
-const tags = db.get('tags')
 const moment = require('moment')
-const striptags = require('striptags')
 const parsePdf2 = require('./parsePdf2')
 
 // @TODO: can we query by modified date? https://github.com/WP-API/WP-API/issues/472
@@ -28,10 +23,11 @@ const parsePdf2 = require('./parsePdf2')
 
 // NOTE: page 1 is the latest podcasts:
 let page = 1
-let per_page = 100
-let query = {
+const per_page = 100
+const query = {
   per_page,
 }
+
 let wpQueryString = querystring.stringify(query)
 
 const WPAPI = require('wpapi')
@@ -58,48 +54,46 @@ async function findAdd(post) {
     return
 }
 
-function getPosts(page) {
+async function getPosts(page) {
 
   query.page = page;
   wpQueryString = querystring.stringify(query);
 
-  return rp(`https://softwareengineeringdaily.com/wp-json/wp/v2/posts?${wpQueryString}`)
-    .then(function (response) {
-      let promises = [];
-      let postsResponse = JSON.parse(response);
-      console.log(postsResponse.length, 'Wordpress posts returned')
+  try {
+    const response = await rp(`https://softwareengineeringdaily.com/wp-json/wp/v2/posts?${wpQueryString}`);
+    let postsResponse = JSON.parse(response);
+    console.log(postsResponse.length, 'Wordpress posts returned')
 
-      const queue = postsResponse.map(post => {
-        return async () => {
-          post.date = moment(post.date).toDate()
-          return await findAdd(post)
-        }
-      })
-
-      return Throttle.all(queue);
-    })
-    .then((result) => {
-      if (!result) {
-        console.log('Done and closing db connection!');
-        db.close();
-        process.exit();
-	      return;
-      };
-
-      page += 1;
-      console.log('page', page)
-      return getPosts(page);
-    })
-    .catch(function (err) {
-      if (err.message.indexOf('rest_post_invalid_page_number') > -1) {
-        console.log('Processed all Wordpress posts')
-        db.close();
-        process.exit();
-      } else {
-        console.log('ERROR', err)
-        process.exit(1)
+    const queue = postsResponse.map(post => {
+      return async () => {
+        post.date = moment(post.date).toDate()
+        return await findAdd(post)
       }
-    });
+    })
+
+    const result = Throttle.all(queue);
+
+    if (!result) {
+      console.log('Done and closing db connection!');
+      db.close();
+      process.exit();
+    };
+
+    page += 1;
+    console.log('page', page)
+    return getPosts(page);
+  } 
+  catch(err) {
+    if (err.message.indexOf('rest_post_invalid_page_number') > -1) {
+      console.log('Processed all Wordpress posts')
+      db.close();
+      process.exit();
+    } 
+    else {
+      console.log('ERROR', err)
+      process.exit(1)
+    }
+  } 
 }
 
 getPosts(page)
