@@ -37,26 +37,25 @@ let wpQueryString = querystring.stringify(query)
 const WPAPI = require('wpapi')
 const wp = new WPAPI({ endpoint: 'http://softwareengineeringdaily.com/wp-json/wp/v2/posts' })
 
-function findAdd(post) {
-  return posts.findOne({ id: post.id })
-    .then(async (postFound) => {
+async function findAdd(post) {
+    // fetch post by id
+    const postFound = await posts.findOne({ id: post.id });
 
-      if (!postFound) {
-        console.log('new post!')
-        return posts.insert(post)
-      }
-      // Handles previously stored posts
-      else if (postFound && postFound.transcriptURL && !postFound.transcript) {
-        console.log('setting transcript')
-        let transcript = await parsePdf2(postFound.transcriptURL)
-        return posts.update(
-          { _id: postFound._id },
-          { $set: { transcript } }
-        )
-      }
-
-      return
-    })
+    // if post not exist insert new
+    if (!postFound) {
+      console.log('new post!')
+      return posts.insert(post)
+    } 
+    // Handles previously stored posts
+    else if (postFound && postFound.transcriptURL && !postFound.transcript) {
+      console.log('setting transcript')
+      const transcript = await parsePdf2(postFound.transcriptURL)
+      return posts.update(
+        { _id: postFound._id },
+        { $set: { transcript } }
+      )
+    }
+    return
 }
 
 function getPosts(page) {
