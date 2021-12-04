@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "git push heroku master:master"
+    "deploy": "git push heroku master:master",
+    "postinstall": "patch-package"
   },
   "keywords": [],
   "author": "",
@@ -34,6 +35,7 @@
     "monk": "^7.3.4",
     "node-html-parser": "^1.1.12",
     "ora": "^4.0.3",
+    "patch-package": "^6.4.7",
     "pdf2json": "^1.2.0",
     "pdfreader": "^1.0.6",
     "promise-parallel-throttle": "^3.3.0",
