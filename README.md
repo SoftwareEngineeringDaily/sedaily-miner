@@ -3,8 +3,8 @@
 A script to download posts and auxilliary post details from software engineering daily via the Wordpress api: https://softwareengineeringdaily.com/wp-json/wp/v2/posts and store it into the DB, to be accessed by the sedaily API.
 
 # Set up
- - npm install
- - cp .env.example .env
+ - `npm install`
+ - `cp .env.example .env`
 
 **Note**: Tested on Node version 7.10.1
 
