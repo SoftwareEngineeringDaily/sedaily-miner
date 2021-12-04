@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "git push heroku master:master",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "start": "./run-all.sh"
   },
   "keywords": [],
   "author": "",
