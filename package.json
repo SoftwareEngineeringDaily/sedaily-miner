@@ -44,5 +44,8 @@
     "valid-url": "^1.0.9",
     "wpapi": "^1.0.3",
     "xml2js": "^0.4.23"
+  },
+  "devDependencies": {
+    "ansi-regex": "^6.0.1"
   }
 }
