@@ -12,12 +12,6 @@ const tags = db.get('tags')
 const moment = require('moment')
 const striptags = require('striptags')
 const parsePdf2 = require('./parsePdf2')
-const express = require('express');
-const app = express();
-
-app.get('/', (res) => {
-  res.send("SED's Miner runs periodically!")
-});
 
 // @TODO: can we query by modified date? https://github.com/WP-API/WP-API/issues/472
 // let query = {
