@@ -33,7 +33,7 @@ const getTranscript = async () => {
         spinner.succeed(`[SUCCESS]: ${post.id} ${post.title.rendered} - ${post.transcriptURL}`)
       }
       catch (err) {
-        spinner.fail(`ERROR: ${post.title.rendered} ${transcriptURL}: `, err)
+        spinner.fail(`ERROR: ${post.title.rendered} ${post.transcriptURL}: `, err)
       }
 
       return Promise.resolve()
