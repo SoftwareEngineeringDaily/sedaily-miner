@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo 'Getting all posts'
-node index.js &
+node index.js
 echo 'Getting images'
 node getImg.js
 echo 'Getting mp3s'
