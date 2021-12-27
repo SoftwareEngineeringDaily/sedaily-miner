@@ -35,7 +35,7 @@
     "meta-scrape": "0.0.4",
     "moment": "^2.29.1",
     "mongodb": "^4.2.1",
-    "mongoose": "^6.0.14",
+    "mongoose": "^5.11.15",
     "monk": "^7.3.4",
     "node-html-parser": "^1.1.12",
     "ora": "^4.0.3",
