@@ -40,7 +40,7 @@ function getTags(page) {
       console.log(tagsResponse.length)
       if (tagsResponse.length === 0) return false;
       for (let tag of tagsResponse) {
-        let updatePromise = tags.update({id: tag.id}, tag, {upsert: true});
+        let updatePromise = tags.update({ id: tag.id }, tag, { upsert: true });
         promises.push(updatePromise);
       }
 
@@ -58,6 +58,7 @@ function getTags(page) {
     })
     .catch(function (err) {
       console.log(err)
+      process.exit(1)
     });
 }
 
