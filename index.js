@@ -74,8 +74,9 @@ function getPosts(page) {
     .then(function (response) {
       let promises = [];
       let postsResponse = JSON.parse(response);
-      console.log(postsResponse.length, 'Wordpress posts returned')
-
+      for (let i = 0; i < postsResponse.length; i++) {
+        postsResponse[i].yoast_head_json.twitter_misc['Est. reading time'] = postsResponse[0].yoast_head_json.twitter_misc['est_reading_time'];
+      }
       const queue = postsResponse.map(post => {
         return async () => {
           post.date = moment(post.date).toDate()
