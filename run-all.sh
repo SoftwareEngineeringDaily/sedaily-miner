@@ -8,9 +8,9 @@ echo 'Getting mp3s'
 node getMp3.js
 # echo 'Generating clean description'
 # node generateCleanDescription.js
-# node makeThreadForEpisodes.js
-# node feed-item-collector.js
-# node feed-item-general-collector.js
+node makeThreadForEpisodes.js
+node feed-item-collector.js
+node feed-item-general-collector.js
 # node links-add-images.js # hangs up, do we even need?
 echo 'Getting transcript URLs'
 node getTranscriptURL.js
